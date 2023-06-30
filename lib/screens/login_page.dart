@@ -1,10 +1,10 @@
 
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/data/user_entity.dart';
+import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 
-import '../data/user_preferences.dart';
+import '../model/user_preferences.dart';
 
 import '../main.dart';
 import '../widgets/form_widgets.dart';
@@ -117,7 +117,7 @@ class _LoginPage extends State<LoginPage> {
                           // ),
                           onPressed: () async {
                             await Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                              MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
                             );
                           },
                           child: const Text('Пройти регистрацию', style: TextStyle(fontSize: 16)),
@@ -217,7 +217,7 @@ class _LoginPage extends State<LoginPage> {
                                     // ),
                                     onPressed: () async {
                                       await Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) => const EditProfilePage()),
+                                        MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
                                       );
                                     },
                                     child: const Text(

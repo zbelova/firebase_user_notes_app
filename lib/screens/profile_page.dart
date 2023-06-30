@@ -1,15 +1,17 @@
 
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
+import 'package:firebase_user_notes/firebase/notes_repository.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/data/user_entity.dart';
+import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:intl/intl.dart';
-import '../data/user_preferences.dart';
+import '../model/user_preferences.dart';
 import '../main.dart';
 import 'edit_profile_page.dart';
 
 import 'login_page.dart';
+import 'notes_page.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key}) {
@@ -25,7 +27,7 @@ class ProfilePage extends StatelessWidget {
 class PersonWidget extends StatefulWidget {
   //bool myPage;
 
-  PersonWidget({super.key});
+  const PersonWidget({super.key});
 
   @override
   State<PersonWidget> createState() => _PersonWidgetState();
@@ -39,7 +41,6 @@ class _PersonWidgetState extends State<PersonWidget> {
   @override
   void initState() {
     id = UserPreferences().getLoggedInUserId();
-    //id = 6;
     super.initState();
   }
 
@@ -48,10 +49,33 @@ class _PersonWidgetState extends State<PersonWidget> {
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: PreferredSize(
-        preferredSize: Size.fromHeight(45),
+        preferredSize: const Size.fromHeight(45),
         child: AppBar(
           title: const Text('Профиль'),
         ),
+      ),
+      floatingActionButtonLocation:
+      FloatingActionButtonLocation.centerFloat,
+      floatingActionButton: Container(
+        height: 50,
+        margin: const EdgeInsets.all(10),
+        child: ElevatedButton(
+          onPressed: () {
+
+            if (mounted) {
+              Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => NotesPage(notesRepository: NotesRepository(),),
+              ),
+            );
+            }
+          },
+          child: const Center(
+            child: Text('Мои заметки'),
+          ),
+        ),
+
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -82,14 +106,14 @@ class _PersonWidgetState extends State<PersonWidget> {
                   children: [Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
-                      Text("Пользователь не найден"),
+                      const Text("Пользователь не найден"),
                       logoutButton(context),
                     ],
                   ),]
                 );
               }
             }
-            return Center(
+            return const Center(
               child: CircularProgressIndicator(),
             );
           },
@@ -100,10 +124,11 @@ class _PersonWidgetState extends State<PersonWidget> {
   }
 
   Future<UserEntity?> buildById() async {
-    if (id > 0)
+    if (id > 0) {
       return objectbox.getById(id);
-    else
+    } else {
       return null;
+    }
   }
 
   Widget _buildLandscapeProfile(BuildContext context, UserEntity user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
@@ -119,7 +144,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                     flex: 2,
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 25,
                         ),
                         _buildTopImage(user),
@@ -129,7 +154,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                   Expanded(
                     flex: 4,
                     child: Padding(
-                      padding: EdgeInsets.only(left: 20, right: 20),
+                      padding: const EdgeInsets.only(left: 20, right: 20),
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
@@ -144,7 +169,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                   Expanded(
                     child: Column(
                       children: [
-                        SizedBox(
+                        const SizedBox(
                           height: 22,
                         ),
                         editButton(context, user),
@@ -177,7 +202,7 @@ class _PersonWidgetState extends State<PersonWidget> {
               ],
             ),
           ),
-          SizedBox(
+          const SizedBox(
             height: 20,
           ),
           Row(
@@ -222,7 +247,7 @@ class _PersonWidgetState extends State<PersonWidget> {
           context,
           MaterialPageRoute(
             //builder: (context) => const EditProfilePage(),
-            builder: (context) => const EditProfilePage(),
+            builder: (context) => EditProfilePage(authRepository: AuthRepository(),),
           ),
         );
         setState(() {
@@ -253,7 +278,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                 width: MediaQuery.of(context).size.width,
                 decoration: BoxDecoration(
                   borderRadius: BorderRadius.circular(10),
-                  color: Color(0xff03ecd4),
+                  color: const Color(0xff03ecd4),
                 ),
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),

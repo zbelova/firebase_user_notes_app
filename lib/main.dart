@@ -1,10 +1,11 @@
+
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/screens/login_page.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'data/user_preferences.dart';
-import 'data/users_repo.dart';
+import 'model/user_preferences.dart';
+import 'model/users_repo.dart';
 import 'globals/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
@@ -17,10 +18,10 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+  // final AuthRepository authRepository = AuthRepository();
+  // final NotesRepository notesRepository = NotesRepository();
   objectbox = await ObjectBox.create();
   await UserPreferences().init();
-  //User? user = UserPreferences().getUserObject();
-  //await UserPreferences().clear(); //если раскомментить эти строчки, то сбросятся все сохраненные данные пользователя - если надо для тестов
   runApp(RegistrationApp());
 }
 
@@ -54,7 +55,6 @@ class RegistrationApp extends StatelessWidget {
   }
 
   Widget buildHomePage() {
-    //late var user1 = objectbox.getById(1);
     if (goToMainPage) {
       UserPreferences().setLoggedIn(true);
       return ProfilePage();

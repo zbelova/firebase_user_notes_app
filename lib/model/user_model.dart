@@ -6,7 +6,7 @@ class UserModel {
   String? name;
   String? phone;
   String email;
-  String? password;
+  String password;
 
   //DateTime birthDate = DateTime.now();
   DateTime? birthDate;
@@ -14,18 +14,16 @@ class UserModel {
   String aboutSelf;
   File? photo;
 
-  UserModel({this.name, this.phone = '', this.email = '', this.password, this.city = '', this.aboutSelf = '', this.photo, this.birthDate});
+  UserModel({this.name, this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate});
 
 //TODO: загрузка юзера из фаербейза
-  // UserModel.fromFirebase(User currentUser) {
-  //   email = currentUser.email!;
-  //   name = currentUser.displayName!;
-  //   photo = File(currentUser.photoURL!);
-  //   phone = currentUser.phoneNumber!;
-  //   birthDate = currentUser.metadata.
-  //   //initialize all fields from firebase
-  //
-  // }
+//   UserModel.fromFirebase() {
+//
+//
+//     //initialize all fields from firebase
+//
+//
+//   }
 
   String birthDateToString() {
     return DateFormat('dd.MM.yyyy').format(birthDate!);

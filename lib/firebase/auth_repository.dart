@@ -28,25 +28,27 @@ class AuthRepository {
 
   }
 
-  Future<bool> signUp(String email, String password, String name) async {
+
+  //регистрация пользователя
+  Future<String> signUp(String email, String password) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      return true;
+      return "Регистрация успешна";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
-        print('The password provided is too weak.');
+        return 'Пароль слишком простой.';
       } else if (e.code == 'email-already-in-use') {
-        print('The account already exists for that email.');
+        return 'Пользователь с таким email уже существует.';
       } else if (e.code == 'invalid-email') {
-        print('Invalid email address.');
+        return 'Неверный email.';
       }
     } catch (e) {
-      print(e);
+      return "Ошибка";
     }
-    return false;
+    return "Ошибка";
   }
 
 

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+
+
 class PrefixWidget extends StatelessWidget {
   final String prefixText;
 
@@ -14,7 +16,7 @@ class PrefixWidget extends StatelessWidget {
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
         Padding(
-          padding: EdgeInsets.only(left: 20, right: 5),
+          padding: const EdgeInsets.only(left: 20, right: 5),
           child: Text(
             "$prefixText:".toUpperCase(),
             style: TextStyle(color: Colors.grey[700]),
@@ -27,7 +29,7 @@ class PrefixWidget extends StatelessWidget {
 }
 
 class CheckboxFormField extends FormField<bool> {
-  CheckboxFormField({String? title, FormFieldSetter<bool>? onSaved, FormFieldValidator<bool>? validator, bool initialValue = false, bool autovalidate = false})
+  CheckboxFormField({super.key, String? title, FormFieldSetter<bool>? onSaved, FormFieldValidator<bool>? validator, bool initialValue = false, bool autovalidate = false})
       : super(
             onSaved: onSaved,
             validator: validator,
@@ -39,7 +41,7 @@ class CheckboxFormField extends FormField<bool> {
                     dense: state.hasError,
                     title: Text(
                       title!,
-                      style: TextStyle(color: Colors.white),
+                      style: const TextStyle(color: Colors.white),
                     ),
                     value: state.value,
                     onChanged: state.didChange,
@@ -85,10 +87,4 @@ class CheckboxFormField extends FormField<bool> {
               );
             });
 }
-//
-// CheckboxListTile(
-//
-// value: _approve,
-// onChanged: (bool? value) {
-// setState(() => _approve = value!);
-// });
+

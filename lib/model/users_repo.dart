@@ -1,4 +1,4 @@
-import 'package:firebase_user_notes/data/user_entity.dart';
+import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:objectbox/objectbox.dart';
 
 import '../objectbox.g.dart';
