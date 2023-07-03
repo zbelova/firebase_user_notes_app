@@ -1,11 +1,12 @@
-
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/firebase/notes_repository.dart';
+import 'package:firebase_user_notes/model/user_model.dart';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:intl/intl.dart';
+import '../firebase/profiles_repository.dart';
 import '../model/user_preferences.dart';
 import '../main.dart';
 import 'edit_profile_page.dart';
@@ -26,22 +27,30 @@ class ProfilePage extends StatelessWidget {
 
 class PersonWidget extends StatefulWidget {
   //bool myPage;
+  final ProfilesRepository profilesRepository = ProfilesRepository();
 
-  const PersonWidget({super.key});
+  PersonWidget({super.key});
 
   @override
   State<PersonWidget> createState() => _PersonWidgetState();
 }
 
 class _PersonWidgetState extends State<PersonWidget> {
-  _PersonWidgetState();
+  UserModel _user = UserModel();
 
   int id = 0;
 
   @override
   void initState() {
-    id = UserPreferences().getLoggedInUserId();
+    //id = UserPreferences().getLoggedInUserId();
+    widget.profilesRepository.read().listen((_handleDataEvent));
     super.initState();
+  }
+
+  void _handleDataEvent(UserModel user) {
+    setState(() {
+      _user = user;
+    });
   }
 
   @override
@@ -54,28 +63,27 @@ class _PersonWidgetState extends State<PersonWidget> {
           title: const Text('Профиль'),
         ),
       ),
-      floatingActionButtonLocation:
-      FloatingActionButtonLocation.centerFloat,
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
       floatingActionButton: Container(
         height: 50,
         margin: const EdgeInsets.all(10),
         child: ElevatedButton(
           onPressed: () {
-
             if (mounted) {
               Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NotesPage(notesRepository: NotesRepository(),),
-              ),
-            );
+                context,
+                MaterialPageRoute(
+                  builder: (context) => NotesPage(
+                    notesRepository: NotesRepository(),
+                  ),
+                ),
+              );
             }
           },
           child: const Center(
             child: Text('Мои заметки'),
           ),
         ),
-
       ),
       body: Container(
         decoration: const BoxDecoration(
@@ -86,39 +94,18 @@ class _PersonWidgetState extends State<PersonWidget> {
             fit: BoxFit.cover,
           ),
         ),
-        child: FutureBuilder(
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.done) {
-              if (snapshot.hasData) {
-                // Extracting data from snapshot object
-                final user = snapshot.data;
-                return OrientationBuilder(
-                  builder: (context, orientation) {
-                    if (orientation == Orientation.portrait) {
-                      return _buildPortraitProfile(context, user!);
-                    } else {
-                      return _buildLandscapeProfile(context, user!);
-                    }
-                  },
-                );
-              } else {
-                return ListView(
-                  children: [Row(
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
-                      const Text("Пользователь не найден"),
-                      logoutButton(context),
-                    ],
-                  ),]
-                );
-              }
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            if (orientation == Orientation.portrait) {
+              return _buildPortraitProfile(context, _user);
+            } else {
+              return _buildLandscapeProfile(context, _user);
             }
-            return const Center(
-              child: CircularProgressIndicator(),
-            );
           },
-          future: buildById(),
         ),
+        // return const Center(
+        //   child: CircularProgressIndicator(),
+        // );
       ),
     );
   }
@@ -131,7 +118,7 @@ class _PersonWidgetState extends State<PersonWidget> {
     }
   }
 
-  Widget _buildLandscapeProfile(BuildContext context, UserEntity user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
+  Widget _buildLandscapeProfile(BuildContext context, UserModel user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
         return ListView(
           children: [
             Padding(
@@ -158,9 +145,9 @@ class _PersonWidgetState extends State<PersonWidget> {
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildProfileTextFieldView("Имя", user.name),
+                          _buildProfileTextFieldView("Имя", user.name!),
                           if (user.city.isNotEmpty) _buildProfileTextFieldView("Город", user.city),
-                          if (user.birthDate != null) _buildProfileTextFieldView("Дата рождения", user.birthDate != null ? DateFormat('dd.MM.yyyy').format(user.birthDate!) : ''),
+                          if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate),
                           if (user.aboutSelf.isNotEmpty) _buildProfileTextFieldView("О себе", user.aboutSelf),
                         ],
                       ),
@@ -187,7 +174,7 @@ class _PersonWidgetState extends State<PersonWidget> {
         );
       }));
 
-  Widget _buildPortraitProfile(BuildContext context, UserEntity user) => ListView(
+  Widget _buildPortraitProfile(BuildContext context, UserModel user) => ListView(
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20.0),
@@ -218,7 +205,7 @@ class _PersonWidgetState extends State<PersonWidget> {
               children: [
                 _buildProfileTextFieldView("Имя", user.name),
                 if (user.city.isNotEmpty) _buildProfileTextFieldView("Город", user.city),
-                if (user.birthDate != null) _buildProfileTextFieldView("Дата рождения", user.birthDate != null ? DateFormat('dd.MM.yyyy').format(user.birthDate!) : ''),
+                //if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate ),
                 if (user.aboutSelf.isNotEmpty) _buildProfileTextFieldView("О себе", user.aboutSelf),
               ],
             ),
@@ -233,26 +220,34 @@ class _PersonWidgetState extends State<PersonWidget> {
         UserPreferences().setLoggedInUserId(0);
         AuthRepository.logout();
         //UserPreferences().setRememberLoggedIn(false);
-        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage(authRepository: AuthRepository(),)), (Route<dynamic> route) => false);
+        Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(
+                builder: (context) => LoginPage(
+                      authRepository: AuthRepository(),
+                    )),
+            (Route<dynamic> route) => false);
       },
       //child: Text("Выйти"),
       child: const Icon(Icons.logout),
     );
   }
 
-  ElevatedButton editButton(BuildContext context, UserEntity user) {
+  ElevatedButton editButton(BuildContext context, UserModel user) {
     return ElevatedButton(
       onPressed: () async {
-        final data = await Navigator.push(
-          context,
-          MaterialPageRoute(
-            //builder: (context) => const EditProfilePage(),
-            builder: (context) => EditProfilePage(authRepository: AuthRepository(),),
-          ),
-        );
-        setState(() {
-          // user = data;
-        });
+        if (mounted) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditProfilePage(
+                authRepository: AuthRepository(),
+              ),
+            ),
+          );
+        }
+        // setState(() {
+        //   // user = data;
+        // });
       },
       //child: Text("Редактировать"),
 
@@ -298,39 +293,7 @@ class _PersonWidgetState extends State<PersonWidget> {
     );
   }
 
-  //другой способ через передачу функции
-/*
-  Widget _buildName() {
-    return Column(
-      children: [
-        Text(
-          'Имя',
-          style: Theme.of(context).textTheme.bodySmall,
-          //style: TextStyle(fontSize: 12, color: Colors.grey),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-        Text(user.name)
-      ],
-    );
-  }
-
-  Widget _buildDesc() => Text(
-        user.aboutSelf,
-        softWrap: true,
-        style: const TextStyle(fontSize: 16),
-      );
-
-  Row _buildProfileRow(Widget field) {
-    return Row(
-      children: [
-        Expanded(child: field),
-      ],
-    );
-  }*/
-
-  Widget _buildTopImage(UserEntity user) => SizedBox(
+  Widget _buildTopImage(UserModel user) => SizedBox(
         width: 200,
         child: user.buildPhotoImage(),
       );

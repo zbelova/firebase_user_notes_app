@@ -1,33 +1,37 @@
 import 'dart:io';
 import 'package:flutter/cupertino.dart';
-import 'package:intl/intl.dart';
+
 
 class UserModel {
-  String? name;
-  String? phone;
+  String name;
+  String phone;
   String email;
   String password;
-
-  //DateTime birthDate = DateTime.now();
-  DateTime? birthDate;
+  String birthDate;
   String city;
   String aboutSelf;
   File? photo;
+  String? path;
 
-  UserModel({this.name, this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate});
+  UserModel({this.name = '', this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate = '', this.path});
 
-//TODO: загрузка юзера из фаербейза
-//   UserModel.fromFirebase() {
-//
-//
-//     //initialize all fields from firebase
-//
-//
-//   }
+  UserModel.fromDB({
+    this.name = '',
+    this.phone = '',
+    this.password = '',
+    this.city = '',
+    this.aboutSelf = '',
+    this.photo,
+    this.birthDate= '',
+    this.path,
+    this.email = '',
+  });
 
-  String birthDateToString() {
-    return DateFormat('dd.MM.yyyy').format(birthDate!);
-  }
+
+  // String birthDateToString() {
+  //   return birthDate;
+  //   //return DateFormat('dd.MM.yyyy').format(birthDate!);
+  // }
 
   Widget buildPhotoImage() {
     return Container(
@@ -40,12 +44,16 @@ class UserModel {
         borderRadius: BorderRadius.circular(100),
         child: AspectRatio(
           aspectRatio: 1,
-          child: photo == 'lib/assets/default.jpg' ? Image.asset('lib/assets/default.jpg') : Image.file(
-            photo!,
-            fit: BoxFit.cover,
-          ),
+          child: Image.asset('lib/assets/default.jpg')
+          // photo == 'lib/assets/default.jpg'
+          //     ? Image.asset('lib/assets/default.jpg')
+          //     : Image.file(
+          //         photo!,
+          //         fit: BoxFit.cover,
+          //       ),
         ),
       ),
     );
   }
 }
+

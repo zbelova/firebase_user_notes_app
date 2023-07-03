@@ -1,13 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'dart:io';
 
 class AuthRepository {
   Future<String> login(String email, String password) async {
-    //List<String> result = [];
-    String result = "";
     try {
       final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
-      print(user);
+     // print(user);
       //UserPreferences().setUserAccessToken(user.credential!.accessToken!);
       return "Идентификация успешна";
     } on FirebaseAuthException catch (e) {
