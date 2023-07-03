@@ -14,11 +14,10 @@ class ProfilesRepository {
         if (snapshot == null) {
           return UserModel();
         }
-//print(FirebaseAuth.instance.currentUser?.email);
+
         return snapshot.keys
             .map(
               (key) => UserModel.fromDB(
-                email: FirebaseAuth.instance.currentUser?.email ?? "",
                 path: key,
                 name: snapshot[key]["name"],
                 phone: snapshot[key]["phone"],

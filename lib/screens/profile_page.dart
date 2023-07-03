@@ -13,6 +13,7 @@ import 'edit_profile_page.dart';
 
 import 'login_page.dart';
 import 'notes_page.dart';
+import '../widgets/form_widgets.dart';
 
 class ProfilePage extends StatelessWidget {
   ProfilePage({super.key}) {
@@ -145,10 +146,10 @@ class _PersonWidgetState extends State<PersonWidget> {
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          _buildProfileTextFieldView("Имя", user.name!),
-                          if (user.city.isNotEmpty) _buildProfileTextFieldView("Город", user.city),
-                          if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate),
-                          if (user.aboutSelf.isNotEmpty) _buildProfileTextFieldView("О себе", user.aboutSelf),
+                          ProfileTextFieldView("Имя", user.name!),
+                          if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
+                          if (user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", user.birthDate),
+                          if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
                         ],
                       ),
                     ),
@@ -203,10 +204,10 @@ class _PersonWidgetState extends State<PersonWidget> {
             child: Column(
               //crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                _buildProfileTextFieldView("Имя", user.name),
-                if (user.city.isNotEmpty) _buildProfileTextFieldView("Город", user.city),
+                ProfileTextFieldView("Имя", user.name),
+                if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
                 //if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate ),
-                if (user.aboutSelf.isNotEmpty) _buildProfileTextFieldView("О себе", user.aboutSelf),
+                if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
               ],
             ),
           )
@@ -255,43 +256,7 @@ class _PersonWidgetState extends State<PersonWidget> {
     );
   }
 
-  Row _buildProfileTextFieldView(String fieldTitle, String fieldValue) {
-    return Row(
-      children: [
-        Expanded(
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Text(
-                fieldTitle,
-                style: Theme.of(context).textTheme.bodySmall,
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-              Container(
-                width: MediaQuery.of(context).size.width,
-                decoration: BoxDecoration(
-                  borderRadius: BorderRadius.circular(10),
-                  color: const Color(0xff03ecd4),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Text(
-                    fieldValue,
-                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
-                  ),
-                ),
-              ),
-              const SizedBox(
-                height: 10,
-              ),
-            ],
-          ),
-        ),
-      ],
-    );
-  }
+
 
   Widget _buildTopImage(UserModel user) => SizedBox(
         width: 200,

@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
 
 
@@ -13,7 +14,9 @@ class UserModel {
   File? photo;
   String? path;
 
-  UserModel({this.name = '', this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate = '', this.path});
+  UserModel({this.name = '', this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate = '', this.path}) {
+    //print ('UserModel constructor');
+  }
 
   UserModel.fromDB({
     this.name = '',
@@ -25,7 +28,10 @@ class UserModel {
     this.birthDate= '',
     this.path,
     this.email = '',
-  });
+  }) {
+    email = FirebaseAuth.instance.currentUser!.email!;
+
+  }
 
 
   // String birthDateToString() {

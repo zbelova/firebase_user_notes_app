@@ -483,16 +483,18 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   Widget buildEmailField() {
-    return TextFormField(
-      key: const ValueKey('_user.email'),
-      initialValue: _user.email,
-      decoration: const InputDecoration(prefixIcon: PrefixWidget('Email')),
-      keyboardType: TextInputType.emailAddress,
-      validator: validateEmail,
-      onSaved: (value) {
-        _user.email = value!;
-      },
-    );
+    print('buildEmailField');
+    return ProfileTextFieldView('Email', _user.email);
+    // return TextFormField(
+    //   key: const ValueKey('_user.email'),
+    //   initialValue: _user.email,
+    //   decoration: const InputDecoration(prefixIcon: PrefixWidget('Email')),
+    //   keyboardType: TextInputType.emailAddress,
+    //   validator: validateEmail,
+    //   onSaved: (value) {
+    //     _user.email = value!;
+    //   },
+    // );
   }
 
   Widget buildContactField() {

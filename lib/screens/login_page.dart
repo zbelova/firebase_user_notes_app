@@ -25,7 +25,6 @@ class _LoginPage extends State<LoginPage> {
   String password = '';
   String? correctName;
   String? correctPassword;
-  UserEntity? user;
   bool? _remember;
 
   Future<String> _login(email, password) async {
@@ -312,10 +311,7 @@ class _LoginPage extends State<LoginPage> {
     );
   }
 
-  Future<void> _loadUser(email) async {
-    user = (await objectbox.getByEmail(email));
-    setState(() {});
-  }
+
 
   Future<void> _validateLogin() async {
     Color color = Colors.red;
