@@ -31,6 +31,9 @@ class UserPreferences {
   Future setLoggedInUserId(int id) async {
     await _preferences?.setInt(_keyLoggedInUserId, id);
   }
+  String? getUserAccessToken() {
+    return _preferences?.getString(_keyLoggedInUserAccessToken);
+  }
   Future setUserAccessToken(String id) async {
     await _preferences?.setString(_keyLoggedInUserAccessToken, id);
   }

@@ -1,24 +1,22 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/firebase/notes_repository.dart';
 import 'package:firebase_user_notes/model/user_model.dart';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/model/user_entity.dart';
-import 'package:intl/intl.dart';
 import '../firebase/profiles_repository.dart';
 import '../model/user_preferences.dart';
-import '../main.dart';
 import 'edit_profile_page.dart';
-
 import 'login_page.dart';
 import 'notes_page.dart';
 import '../widgets/form_widgets.dart';
 
 class ProfilePage extends StatelessWidget {
-  ProfilePage({super.key}) {
-    //user = user ?? UserPreferences().getUserObject(); //если не передан пользователь в качестве аргумента, то открывается страница текущего пользователя приложения
-  }
+  final AuthRepository authRepository;
+
+  ProfilePage({super.key, required this.authRepository});
+
+  //user = user ?? UserPreferences().getUserObject(); //если не передан пользователь в качестве аргумента, то открывается страница текущего пользователя приложения
 
   @override
   Widget build(BuildContext context) {
@@ -38,18 +36,20 @@ class PersonWidget extends StatefulWidget {
 
 class _PersonWidgetState extends State<PersonWidget> {
   UserModel _user = UserModel();
-
-  int id = 0;
+  final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
+  User fbUser = FirebaseAuth.instance.currentUser!;
+  String id = '';
 
   @override
   void initState() {
-    //id = UserPreferences().getLoggedInUserId();
+    // id = UserPreferences().getUserAccessToken()!;
     widget.profilesRepository.read().listen((_handleDataEvent));
     super.initState();
   }
 
   void _handleDataEvent(UserModel user) {
     setState(() {
+      print('user = $user');
       _user = user;
     });
   }
@@ -111,14 +111,6 @@ class _PersonWidgetState extends State<PersonWidget> {
     );
   }
 
-  Future<UserEntity?> buildById() async {
-    if (id > 0) {
-      return objectbox.getById(id);
-    } else {
-      return null;
-    }
-  }
-
   Widget _buildLandscapeProfile(BuildContext context, UserModel user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
         return ListView(
           children: [
@@ -146,9 +138,10 @@ class _PersonWidgetState extends State<PersonWidget> {
                       child: Column(
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          ProfileTextFieldView("Имя", user.name!),
+                          ProfileTextFieldView("Email", user.email),
+                          if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name!),
                           if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
-                          if (user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", user.birthDate),
+                          //if (user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", user.birthDate),
                           if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
                         ],
                       ),
@@ -175,44 +168,48 @@ class _PersonWidgetState extends State<PersonWidget> {
         );
       }));
 
-  Widget _buildPortraitProfile(BuildContext context, UserModel user) => ListView(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              children: [
-                editButton(context, user),
-                const SizedBox(
-                  width: 10,
-                ),
-                logoutButton(context),
-              ],
-            ),
-          ),
-          const SizedBox(
-            height: 20,
-          ),
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
+  Widget _buildPortraitProfile(BuildContext context, UserModel user) {
+   // print('user = $user');
+    return ListView(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20.0),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              _buildTopImage(user),
+              editButton(context, user),
+              const SizedBox(
+                width: 10,
+              ),
+              logoutButton(context),
             ],
           ),
-          Padding(
-            padding: const EdgeInsets.all(30.0),
-            child: Column(
-              //crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                ProfileTextFieldView("Имя", user.name),
-                if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
-                //if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate ),
-                if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
-              ],
-            ),
-          )
-        ],
-      );
+        ),
+        const SizedBox(
+          height: 20,
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            _buildTopImage(user),
+          ],
+        ),
+        Padding(
+          padding: const EdgeInsets.all(30.0),
+          child: Column(
+            //crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              ProfileTextFieldView("Email", user.email),
+              if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name),
+              if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
+              //if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate ),
+              if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
+            ],
+          ),
+        )
+      ],
+    );
+  }
 
   ElevatedButton logoutButton(BuildContext context) {
     return ElevatedButton(
@@ -255,8 +252,6 @@ class _PersonWidgetState extends State<PersonWidget> {
       child: const Icon(Icons.edit),
     );
   }
-
-
 
   Widget _buildTopImage(UserModel user) => SizedBox(
         width: 200,

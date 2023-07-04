@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 
 import '../firebase/notes_repository.dart';
 
+//TODO: передача репозитория, чтобы отображался профиль после возврата с экрана заметок
+
 class NotesPage extends StatefulWidget {
   final NotesRepository notesRepository;
 

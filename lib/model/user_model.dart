@@ -1,20 +1,31 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/cupertino.dart';
-
+import 'package:flutter/material.dart';
 
 class UserModel {
   String name;
   String phone;
   String email;
   String password;
+  String passwordOld;
   String birthDate;
   String city;
   String aboutSelf;
-  File? photo;
+  String photo;
   String? path;
 
-  UserModel({this.name = '', this.phone = '', this.email = '', this.password = '', this.city = '', this.aboutSelf = '', this.photo, this.birthDate = '', this.path}) {
+  UserModel(
+      {this.name = '',
+      this.phone = '',
+      this.email = '',
+      this.password = '',
+      this.passwordOld = '',
+      this.city = '',
+      this.aboutSelf = '',
+      this.photo = 'lib/assets/default.jpg',
+      this.birthDate = '',
+      this.path}) {
     //print ('UserModel constructor');
   }
 
@@ -24,15 +35,14 @@ class UserModel {
     this.password = '',
     this.city = '',
     this.aboutSelf = '',
-    this.photo,
-    this.birthDate= '',
+    this.photo = 'lib/assets/default.jpg',
+    this.birthDate = '',
     this.path,
     this.email = '',
+    this.passwordOld = '',
   }) {
     email = FirebaseAuth.instance.currentUser!.email!;
-
   }
-
 
   // String birthDateToString() {
   //   return birthDate;
@@ -40,6 +50,7 @@ class UserModel {
   // }
 
   Widget buildPhotoImage() {
+   // print('buildPhotoImage');
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),
@@ -50,16 +61,28 @@ class UserModel {
         borderRadius: BorderRadius.circular(100),
         child: AspectRatio(
           aspectRatio: 1,
-          child: Image.asset('lib/assets/default.jpg')
-          // photo == 'lib/assets/default.jpg'
-          //     ? Image.asset('lib/assets/default.jpg')
-          //     : Image.file(
-          //         photo!,
+          child: photo == 'lib/assets/default.jpg'
+              ? Image.asset('lib/assets/default.jpg')
+              :
+          FadeInImage.assetNetwork(
+            placeholder: 'lib/assets/default.jpg',
+            image: photo,
+            fit: BoxFit.cover,
+          ),
+          // Image.network(
+          //         photo,
           //         fit: BoxFit.cover,
+          //         loadingBuilder: (BuildContext context, Widget child, ImageChunkEvent? loadingProgress) {
+          //           if (loadingProgress == null) return child;
+          //           return Center(
+          //             child: CircularProgressIndicator(
+          //               value: loadingProgress.expectedTotalBytes != null ? loadingProgress.cumulativeBytesLoaded / loadingProgress.expectedTotalBytes! : null,
+          //             ),
+          //           );
+          //         },
           //       ),
         ),
       ),
     );
   }
 }
-

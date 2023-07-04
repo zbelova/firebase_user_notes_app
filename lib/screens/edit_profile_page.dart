@@ -1,5 +1,6 @@
 import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_user_notes/firebase/profiles_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
@@ -23,6 +24,7 @@ class EditProfileScreen extends State<EditProfilePage> {
   final GlobalKey<FormState> _formkey = GlobalKey<FormState>();
 
   TextEditingController dateInput = TextEditingController();
+  TextEditingController oldPasswordInput = TextEditingController();
   final ProfilesRepository profilesRepository;
 
   EditProfileScreen({required this.profilesRepository});
@@ -32,6 +34,7 @@ class EditProfileScreen extends State<EditProfilePage> {
   var text;
   var color;
   XFile? image;
+  UploadTask? uploadTask;
   final _approve = false;
   final ImagePicker picker = ImagePicker();
 
@@ -50,11 +53,8 @@ class EditProfileScreen extends State<EditProfilePage> {
     if (loggedIn) {
       //print('init user');
       widget.profilesRepository.read().listen((_handleDataEvent));
-      // user = UserModel.fromFirebase(FirebaseAuth.instance.currentUser!);
-      // if (user!.birthDate != null) {
-      //   String formattedDate = DateFormat('dd.MM.yyyy').format(user!.birthDate!);
-      //   dateInput.text = formattedDate;
-      // }
+
+      setState(() {});
     } else {
       _user = UserModel(email: '', password: '');
     }
@@ -73,30 +73,45 @@ class EditProfileScreen extends State<EditProfilePage> {
 
   Future<void> _updateUser() async {
     await widget.profilesRepository.edit(_user);
+    if (_user.password != '' && _user.passwordOld != '') {
+      bool result = await widget.authRepository.changePassword(_user.email, _user.passwordOld, _user.password);
+      if (result) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Пароль изменен"),
+            backgroundColor: Colors.green,
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text("Не удалось изменить пароль"),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
+    }
+
     if (mounted) Navigator.pop(context);
   }
 
   Future<void> _signUp() async {
     Color color = Colors.green;
     String text = 'Данные профиля сохранены';
-    //if (_formkey.currentState!.validate()) {
     _formkey.currentState!.save();
-    if (loggedIn) {
-      //TODO: update user
-      //_updateUser(user!);
-      Navigator.pop(context, _user);
+
+    String result = await widget.authRepository.signUp(_user.email, _user.password);
+    if (result == 'Регистрация успешна') {
+      await widget.profilesRepository.edit(UserModel(name: ''));
+      Navigator.of(context).pushAndRemoveUntil(
+        MaterialPageRoute(builder: (context) => ProfilePage(authRepository: widget.authRepository,)),
+        (Route<dynamic> route) => false,
+      );
     } else {
-      String result = await widget.authRepository.signUp(_user.email, _user.password);
-      if (result == 'Регистрация успешна') {
-        Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => ProfilePage()),
-          (Route<dynamic> route) => false,
-        );
-      } else {
-        color = Colors.red;
-      }
-      text = result;
+      color = Colors.red;
     }
+    text = result;
+
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(text),
@@ -104,6 +119,51 @@ class EditProfileScreen extends State<EditProfilePage> {
       ),
     );
     //}
+  }
+
+  Future uploadImageToFirebase(XFile _image) async {
+    FirebaseAuth auth = FirebaseAuth.instance;
+    String uid = auth.currentUser!.uid;
+    final path = 'avatars/$uid/${_image.name}';
+    final file = File(_image.path);
+    // print('uid');
+    final ref = FirebaseStorage.instance.ref().child(path);
+    //print('ref');
+    setState(() {
+      _user.photo = 'lib/assets/default.jpg';
+      uploadTask = ref.putFile(file);
+    });
+
+    //print('uploadTask');
+    final snapshot = await uploadTask!.whenComplete(() {});
+    //print ('snapshot');
+    final urlDownload = await snapshot.ref.getDownloadURL();
+    //print('urlDownload');
+    setState(() {
+      _user.photo = urlDownload;
+      //uploadTask = null;
+    });
+    //Navigator.pop(context);
+
+    //TaskSnapshot storageTaskSnapshot = await reference.putFile(_image);
+    //String imageURL = await storageTaskSnapshot.ref.getDownloadURL();
+    // String imageURL = "https://firebasestorage.googleapis.com/v0/b/" +
+    //     storageTaskSnapshot.ref.bucket +
+    //     "/o/" +
+    //     storageTaskSnapshot.ref.fullPath +
+    //     "?alt=media";
+
+    // Сохраняем ссылку на аватар пользователя в Firebase Authentication
+    //await auth.currentUser!.updatePhotoURL(imageURL);
+    //_user.photo = imageURL;
+  }
+
+  @override
+  void dispose() {
+    dateInput.dispose();
+    oldPasswordInput.dispose();
+
+    super.dispose();
   }
 
   @override
@@ -179,9 +239,10 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   Widget buildFormColumn(context) {
+    //print('buildFormColumn');
     return Column(
       children: [
-        //buildPhotoField(),
+       if (loggedIn) buildPhotoField(),
         Container(
           child: _buildTextFieldsColumn(context),
         ),
@@ -253,6 +314,11 @@ class EditProfileScreen extends State<EditProfilePage> {
         const SizedBox(
           height: 14,
         ),
+        if (loggedIn) _buildOldPasswordField(),
+        if (loggedIn)
+          const SizedBox(
+            height: 14,
+          ),
         buildPasswordField(),
         const SizedBox(
           height: 14,
@@ -280,12 +346,12 @@ class EditProfileScreen extends State<EditProfilePage> {
       initialValue: _user.name,
       decoration: const InputDecoration(prefixIcon: PrefixWidget('Имя')),
       keyboardType: TextInputType.text,
-      validator: (value) {
-        if (value!.isEmpty) {
-          return 'Введитие имя';
-        }
-        return null;
-      },
+      // validator: (value) {
+      //   if (value!.isEmpty) {
+      //     return 'Введитие имя';
+      //   }
+      //   return null;
+      // },
       onSaved: (value) {
         _user.name = value!;
       },
@@ -294,11 +360,6 @@ class EditProfileScreen extends State<EditProfilePage> {
 
   Widget buildDateTimeField() {
     return TextFormField(
-      // validator: (value) {
-      //   if (value!.isEmpty) {
-      //     return 'Введитие дату рождения';
-      //   }
-      // },
       key: const ValueKey("_user.birthDate"),
 
       controller: dateInput,
@@ -366,14 +427,7 @@ class EditProfileScreen extends State<EditProfilePage> {
           ),
         ),
         keyboardType: TextInputType.multiline,
-
         maxLines: 3,
-
-        // validator: (value) {
-        //   if (value!.isEmpty) {
-        //     return 'Напишите о себе ';
-        //   }
-        // },
         onSaved: (value) {
           _user.aboutSelf = value!;
         },
@@ -381,24 +435,32 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
-// Widget buildPhotoField() { //фото из интернета. заменила на фото из галлереи
-//   return TextFormField(
-//     initialValue: user!.photo == 'lib/data/photos/default.jpg' ? '' : user!.photo,
-//     decoration: const InputDecoration(labelText: 'Ваше фото (URL ссылка)'),
-//     keyboardType: TextInputType.multiline,
-//     validator: validateImageUrl,
-//     onSaved: (value) {
-//       user!.photo = value!;
-//     },
-//   );
-// }
+  Widget _buidProgressIndicator() => StreamBuilder<TaskSnapshot>(
+      stream: uploadTask!.snapshotEvents,
+      builder: (context, snapshot) {
+        if (snapshot.hasData) {
+          final TaskSnapshot taskSnapshot = snapshot.data!;
+          final double progress = taskSnapshot.bytesTransferred / taskSnapshot.totalBytes * 100;
+          return Text(
+            '$progress %',
+            style: const TextStyle(fontSize: 20, color: Colors.white),
+          );
+        } else {
+          return const SizedBox();
+        }
+      });
+
   Widget buildPhotoField() {
+    // print('buildPhotoField');
     return Column(
       children: [
         if (image != null) ...[
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(width: 150, child: _user.buildPhotoImage()),
+            child: SizedBox(
+              width: 150,
+              child: _user.buildPhotoImage(),
+            ),
           ),
         ] else ...[
           if (_user.photo != 'lib/assets/default.jpg') ...[
@@ -483,18 +545,18 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   Widget buildEmailField() {
-    print('buildEmailField');
-    return ProfileTextFieldView('Email', _user.email);
-    // return TextFormField(
-    //   key: const ValueKey('_user.email'),
-    //   initialValue: _user.email,
-    //   decoration: const InputDecoration(prefixIcon: PrefixWidget('Email')),
-    //   keyboardType: TextInputType.emailAddress,
-    //   validator: validateEmail,
-    //   onSaved: (value) {
-    //     _user.email = value!;
-    //   },
-    // );
+    return loggedIn
+        ? ProfileTextFieldView('Аккаунт', _user.email)
+        : TextFormField(
+            key: const ValueKey('_user.email'),
+            initialValue: _user.email,
+            decoration: const InputDecoration(prefixIcon: PrefixWidget('Email')),
+            keyboardType: TextInputType.emailAddress,
+            validator: validateEmail,
+            onSaved: (value) {
+              _user.email = value!;
+            },
+          );
   }
 
   Widget buildContactField() {
@@ -518,12 +580,13 @@ class EditProfileScreen extends State<EditProfilePage> {
   Widget buildPasswordField() {
     return TextFormField(
       key: const ValueKey('_user.password'),
-      initialValue: _user.password,
       decoration: InputDecoration(prefixIcon: loggedIn ? PrefixWidget('Новый пароль') : PrefixWidget('Пароль')),
       keyboardType: TextInputType.visiblePassword,
       validator: (value) {
         if (value!.isEmpty && !loggedIn) {
           return "Придуймайте пароль";
+          // } else if (value.isNotEmpty && loggedIn && oldPasswordInput.text != value) {
+          //   return 'Пароли не совпадают';
         }
         return null;
       },
@@ -539,13 +602,26 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
+  Widget _buildOldPasswordField() {
+    return TextFormField(
+      key: const ValueKey('_user.passwordOld'),
+      controller: oldPasswordInput,
+      decoration: InputDecoration(prefixIcon: PrefixWidget('Старый пароль')),
+      keyboardType: TextInputType.visiblePassword,
+      onSaved: (value) {
+        _user.passwordOld = value!;
+      },
+    );
+  }
+
 //we can upload image from camera or from gallery based on parameter
   Future getImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
+    uploadImageToFirebase(img!);
 
     setState(() {
       image = img;
-      _user.photo = File(img!.path);
+      //print('img');
     });
   }
 
@@ -589,6 +665,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                         ],
                       ),
                     ),
+                     //_buidProgressIndicator()
                   ],
                 ),
               ),
@@ -608,7 +685,6 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   String? validateEmail(String? value) {
-    return null;
     String pattern = r'^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$';
     RegExp regex = RegExp(pattern);
     if (value!.isEmpty) {

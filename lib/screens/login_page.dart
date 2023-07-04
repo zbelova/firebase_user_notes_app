@@ -1,4 +1,5 @@
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
@@ -327,9 +328,9 @@ class _LoginPage extends State<LoginPage> {
         UserPreferences().setLoggedIn(true);
         UserPreferences().setRememberLoggedIn(_remember!);
         //FirebaseAuth.instance.currentUser
-        //UserPreferences().setUserAccessToken(id);
+        UserPreferences().setUserAccessToken(FirebaseAuth.instance.currentUser!.uid);
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => ProfilePage()),
+          MaterialPageRoute(builder: (context) => ProfilePage(authRepository: widget.authRepository,)),
           (Route<dynamic> route) => false,
         );
       } else {

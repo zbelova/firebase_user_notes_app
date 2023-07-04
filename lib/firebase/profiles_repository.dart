@@ -4,8 +4,8 @@ import 'package:firebase_database/firebase_database.dart';
 import '../model/user_model.dart';
 
 class ProfilesRepository {
-
   Stream<UserModel> read() {
+    //print("read");
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
@@ -24,9 +24,11 @@ class ProfilesRepository {
                 city: snapshot[key]["city"],
                 aboutSelf: snapshot[key]["aboutSelf"],
                 birthDate: snapshot[key]["birthDate"],
+                photo: snapshot[key]["photo"] ?? 'lib/assets/default.jpg',
               ),
             )
-            .toList().first;
+            .toList()
+            .first;
       });
     } catch (e) {
       //print(e);
@@ -39,21 +41,10 @@ class ProfilesRepository {
       final id = FirebaseAuth.instance.currentUser?.uid;
       if (id == null) return;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
-
-      await ref.child(id).set({"name": user.name, "phone" : user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate});
+//print("edit");
+      await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate, "photo": user.photo});
     } catch (e) {
       print(e);
-    }
-  }
-
-  Future<void> remove(String key) async {
-    try {
-      final id = FirebaseAuth.instance.currentUser?.uid;
-      if (id == null) return;
-      final ref = FirebaseDatabase.instance.ref("notes/$id");
-      await ref.child(key).remove();
-    } catch (e) {
-      //print(e);
     }
   }
 }

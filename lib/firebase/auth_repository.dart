@@ -33,6 +33,7 @@ class AuthRepository {
         email: email,
         password: password,
       );
+
       return "Регистрация успешна";
     } on FirebaseAuthException catch (e) {
       if (e.code == 'weak-password') {
@@ -53,4 +54,28 @@ class AuthRepository {
   static Future<void> logout() async {
     await FirebaseAuth.instance.signOut();
   }
+
+  // Метод для изменения пароля пользователя
+  Future<bool> changePassword(String email, String currentPassword, String newPassword) async {
+    User user = FirebaseAuth.instance.currentUser!; // Получаем текущего пользователя
+
+    // Создаем объект учетных данных для проведения проверки подлинности
+    AuthCredential credential = EmailAuthProvider.credential(email: email, password: currentPassword);
+
+    try {
+      // Проверяем подлинность пользователя с использованием текущих учетных данных
+      await user.reauthenticateWithCredential(credential);
+
+      // Меняем пароль на новый
+      await user.updatePassword(newPassword);
+      return true;
+    } catch(e) {
+      print(e);
+      // В случае ошибки выводим сообщение об ошибке
+      return false;
+    }
+  }
+
+  // get user
+
 }

@@ -10,7 +10,7 @@ import 'globals/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-late ObjectBox objectbox;
+
 
 
 Future main() async {
@@ -20,7 +20,7 @@ Future main() async {
   );
   // final AuthRepository authRepository = AuthRepository();
   // final NotesRepository notesRepository = NotesRepository();
-  objectbox = await ObjectBox.create();
+
   await UserPreferences().init();
   runApp(RegistrationApp());
 }
@@ -57,7 +57,7 @@ class RegistrationApp extends StatelessWidget {
   Widget buildHomePage() {
     if (goToMainPage) {
       UserPreferences().setLoggedIn(true);
-      return ProfilePage();
+      return ProfilePage(authRepository: AuthRepository());
     } else {
 
       return LoginPage(authRepository: AuthRepository(),);
