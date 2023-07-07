@@ -1,13 +1,8 @@
-
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/model/user_entity.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
-
 import '../model/user_preferences.dart';
-
-import '../main.dart';
 import '../widgets/form_widgets.dart';
 import 'edit_profile_page.dart';
 
@@ -278,6 +273,7 @@ class _LoginPage extends State<LoginPage> {
           if (value!.isEmpty) {
             return 'Введите пароль для входа';
           }
+          return null;
         },
         onChanged: (password) => setState(() => this.password = password));
   }

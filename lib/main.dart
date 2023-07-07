@@ -1,16 +1,12 @@
-
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/screens/login_page.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'model/user_preferences.dart';
-import 'model/users_repo.dart';
 import 'globals/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
-
-
 
 
 Future main() async {
@@ -18,8 +14,6 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  // final AuthRepository authRepository = AuthRepository();
-  // final NotesRepository notesRepository = NotesRepository();
 
   await UserPreferences().init();
   runApp(RegistrationApp());
