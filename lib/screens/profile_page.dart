@@ -86,27 +86,29 @@ class _PersonWidgetState extends State<PersonWidget> {
           ),
         ),
       ),
-      body: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'lib/assets/bg2.jpg',
+      body: SafeArea(
+        child: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage(
+                'lib/assets/bg2.jpg',
+              ),
+              fit: BoxFit.cover,
             ),
-            fit: BoxFit.cover,
           ),
+          child: OrientationBuilder(
+            builder: (context, orientation) {
+              if (orientation == Orientation.portrait) {
+                return _buildPortraitProfile(context, _user);
+              } else {
+                return _buildLandscapeProfile(context, _user);
+              }
+            },
+          ),
+          // return const Center(
+          //   child: CircularProgressIndicator(),
+          // );
         ),
-        child: OrientationBuilder(
-          builder: (context, orientation) {
-            if (orientation == Orientation.portrait) {
-              return _buildPortraitProfile(context, _user);
-            } else {
-              return _buildLandscapeProfile(context, _user);
-            }
-          },
-        ),
-        // return const Center(
-        //   child: CircularProgressIndicator(),
-        // );
       ),
     );
   }
@@ -139,7 +141,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                         //crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           ProfileTextFieldView("Email", user.email),
-                          if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name!),
+                          if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name),
                           if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
                           //if (user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", user.birthDate),
                           if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),

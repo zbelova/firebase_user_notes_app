@@ -38,14 +38,16 @@ class _LoginPage extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.blue,
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          if (orientation == Orientation.portrait) {
-            return _buildPortraitLoginPage(context);
-          } else {
-            return _buildLandscapeLoginPage(context);
-          }
-        },
+      body: SafeArea(
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            if (orientation == Orientation.portrait) {
+              return _buildPortraitLoginPage(context);
+            } else {
+              return _buildLandscapeLoginPage(context);
+            }
+          },
+        ),
       ),
     );
   }

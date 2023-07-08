@@ -199,14 +199,16 @@ class EditProfileScreen extends State<EditProfilePage> {
               : const Text('Регистрация', style: TextStyle(fontSize: 18)),
         ),
       ),
-      body: OrientationBuilder(
-        builder: (context, orientation) {
-          if (orientation == Orientation.portrait) {
-            return _buildPortraitEditProfile(context);
-          } else {
-            return _buildLandscapeEditProfile(context);
-          }
-        },
+      body: SafeArea(
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            if (orientation == Orientation.portrait) {
+              return _buildPortraitEditProfile(context);
+            } else {
+              return _buildLandscapeEditProfile(context);
+            }
+          },
+        ),
       ),
     );
   }
@@ -435,20 +437,6 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
-  Widget _buidProgressIndicator() => StreamBuilder<TaskSnapshot>(
-      stream: uploadTask!.snapshotEvents,
-      builder: (context, snapshot) {
-        if (snapshot.hasData) {
-          final TaskSnapshot taskSnapshot = snapshot.data!;
-          final double progress = taskSnapshot.bytesTransferred / taskSnapshot.totalBytes * 100;
-          return Text(
-            '$progress %',
-            style: const TextStyle(fontSize: 20, color: Colors.white),
-          );
-        } else {
-          return const SizedBox();
-        }
-      });
 
   Widget buildPhotoField() {
     // print('buildPhotoField');
@@ -502,6 +490,7 @@ class EditProfileScreen extends State<EditProfilePage> {
             if (value == false) {
               return 'Необходимо предоставить согласие на обработку персональных данных';
             }
+            return null;
           },
         ),
         const SizedBox(

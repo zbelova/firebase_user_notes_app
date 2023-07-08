@@ -64,63 +64,65 @@ class _NotesPageState extends State<NotesPage> {
             title: const Text('Мои заметки'),
           ),
         ),
-        body: Container(
-          padding: const EdgeInsets.all(10),
-          decoration: const BoxDecoration(
-            image: DecorationImage(
-              image: AssetImage(
-                'lib/assets/bg2.jpg',
+        body: SafeArea(
+          child: Container(
+            padding: const EdgeInsets.all(10),
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  'lib/assets/bg2.jpg',
+                ),
+                fit: BoxFit.cover,
               ),
-              fit: BoxFit.cover,
             ),
-          ),
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 20,
-              ),
-              TextField(
-                decoration: InputDecoration(
-                  border: const OutlineInputBorder(),
-                  //labelText: 'Введите заметку',
-                  prefixIcon: Padding(
-                    padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
-                    child: Text(
-                      "Заметка:".toUpperCase(),
-                      style: TextStyle(color: Colors.grey[700]),
-                      //style: TextStyle(color: Colors.blue[700]),
+            child: Column(
+              children: [
+                const SizedBox(
+                  height: 20,
+                ),
+                TextField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    //labelText: 'Введите заметку',
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
+                      child: Text(
+                        "Заметка:".toUpperCase(),
+                        style: TextStyle(color: Colors.grey[700]),
+                        //style: TextStyle(color: Colors.blue[700]),
+                      ),
                     ),
                   ),
+                  controller: _textController,
                 ),
-                controller: _textController,
-              ),
-              const SizedBox(
-                height: 8,
-              ),
-              ElevatedButton(
-                onPressed: _addNote,
-                child: const Text('Добавить заметку'),
-              ),
-              const SizedBox(
-                height: 20,
-              ),
-              Expanded(
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    if (_notes.isEmpty) {
-                      return const Center(
-                        child: Text('Заметок нет'),
-                      );
-                    } else {
-                      return ListTile(
-                        title: _buildNote(_notes[index], index),
-                      );
-                    }
-                  },
-                  itemCount: _notes.length,
+                const SizedBox(
+                  height: 8,
                 ),
-              ),
-            ],
+                ElevatedButton(
+                  onPressed: _addNote,
+                  child: const Text('Добавить заметку'),
+                ),
+                const SizedBox(
+                  height: 20,
+                ),
+                Expanded(
+                  child: ListView.builder(
+                    itemBuilder: (context, index) {
+                      if (_notes.isEmpty) {
+                        return const Center(
+                          child: Text('Заметок нет'),
+                        );
+                      } else {
+                        return ListTile(
+                          title: _buildNote(_notes[index], index),
+                        );
+                      }
+                    },
+                    itemCount: _notes.length,
+                  ),
+                ),
+              ],
+            ),
           ),
         ));
   }
