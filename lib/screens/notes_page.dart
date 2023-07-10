@@ -83,7 +83,22 @@ class _NotesPageState extends State<NotesPage> {
               ),
             ),
             child: Column(
-              children: [
+              children: [ //getStripeUser
+                ElevatedButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      paymentLoading = true;
+                    });
+                    getStripeUser(context, email: "example@gmail.com");
+                  } ,
+                  child: const Text(
+                    'Проверить Premium',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
                 ElevatedButton(
                   style: ButtonStyle(
                     foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
@@ -250,12 +265,47 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
+  Future<void> getStripeUser(context, {required String email}) async {
+    try {
+      // 1. create payment intent on the server
+      final response = await http.post(
+          Uri.parse(
+            urlFunctionCheckPremium,
+          ),
+          body: {
+            'email': email,
+          });
+
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+      print(jsonResponse.toString());
+      //TODO check if premium is active
+
+      setState(() {
+        paymentLoading = false;
+      });
+    } catch (e) {
+      log(e.toString());
+      if (e is StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
+  }
+
   Future<void> initPaymentSheet(context, {required String email, required int amount}) async {
     try {
       // 1. create payment intent on the server
       final response = await http.post(
           Uri.parse(
-            urlFunctions,
+            urlFunctionPaymentIntentRequest,
           ),
           body: {
             'email': email,
@@ -264,7 +314,7 @@ class _NotesPageState extends State<NotesPage> {
 
       final jsonResponse = jsonDecode(response.body);
       log(jsonResponse.toString());
-
+      Stripe.instance.resetPaymentSheetCustomer();
       //2. initialize the payment sheet
       await Stripe.instance.initPaymentSheet(
         paymentSheetParameters: SetupPaymentSheetParameters(
