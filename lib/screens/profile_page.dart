@@ -8,8 +8,8 @@ import '../firebase/profiles_repository.dart';
 import '../model/user_preferences.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
-import 'notes_page.dart';
 import '../widgets/form_widgets.dart';
+import 'notes_page.dart';
 
 class ProfilePage extends StatelessWidget {
   final AuthRepository authRepository;

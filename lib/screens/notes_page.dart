@@ -1,15 +1,19 @@
 import 'package:firebase_user_notes/model/note_model.dart';
-import 'package:firebase_user_notes/screens/payment_page.dart';
 import 'package:flutter/material.dart';
-
-import '../firebase/auth_repository.dart';
+import 'dart:convert';
+import 'dart:developer';
+import 'package:http/http.dart' as http;
+import 'package:firebase_user_notes/firebase/auth_repository.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
 import '../firebase/notes_repository.dart';
+import '../keys.dart';
 
 //TODO: передача репозитория, чтобы отображался профиль после возврата с экрана заметок
 
 class NotesPage extends StatefulWidget {
   final NotesRepository notesRepository;
   final AuthRepository authRepository;
+
   const NotesPage({Key? key, required this.notesRepository, required this.authRepository}) : super(key: key);
 
   @override
@@ -20,6 +24,7 @@ class _NotesPageState extends State<NotesPage> {
   final TextEditingController _textController = TextEditingController();
 
   List<NoteModel> _notes = [];
+  bool paymentLoading = false;
 
   @override
   void dispose() {
@@ -79,6 +84,22 @@ class _NotesPageState extends State<NotesPage> {
             ),
             child: Column(
               children: [
+                ElevatedButton(
+                  style: ButtonStyle(
+                    foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      paymentLoading = true;
+                    });
+                    initPaymentSheet(context, email: "example@gmail.com", amount: 2000);
+                  } ,
+                  child: const Text(
+                    'Купить Premium',
+                    style: TextStyle(color: Colors.white),
+                  ),
+                ),
+                paymentLoading? const CircularProgressIndicator() : const SizedBox(),
                 const SizedBox(
                   height: 20,
                 ),
@@ -122,19 +143,6 @@ class _NotesPageState extends State<NotesPage> {
                     },
                     itemCount: _notes.length,
                   ),
-                ),
-                ElevatedButton(
-                  onPressed: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => PaymentPage(
-                            authRepository: AuthRepository()
-                        ),
-                      ),
-                    );
-                  },
-                  child: Text("Оплата"),
                 ),
               ],
             ),
@@ -240,5 +248,62 @@ class _NotesPageState extends State<NotesPage> {
         );
       },
     );
+  }
+
+  Future<void> initPaymentSheet(context, {required String email, required int amount}) async {
+    try {
+      // 1. create payment intent on the server
+      final response = await http.post(
+          Uri.parse(
+            urlFunctions,
+          ),
+          body: {
+            'email': email,
+            'amount': amount.toString(),
+          });
+
+      final jsonResponse = jsonDecode(response.body);
+      log(jsonResponse.toString());
+
+      //2. initialize the payment sheet
+      await Stripe.instance.initPaymentSheet(
+        paymentSheetParameters: SetupPaymentSheetParameters(
+          paymentIntentClientSecret: jsonResponse['paymentIntent'],
+          merchantDisplayName: 'Space Notes',
+          customerId: jsonResponse['customer'],
+          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
+          style: ThemeMode.light,
+        ),
+      );
+
+
+      await Stripe.instance.presentPaymentSheet();
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text(
+            'Оплата прошла успешно!',
+          ),
+          backgroundColor: Colors.green,
+        ),
+      );
+
+      setState(() {
+        paymentLoading = false;
+      });
+    } catch (e) {
+      log(e.toString());
+      if (e is StripeException) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e')),
+        );
+      }
+    }
   }
 }
