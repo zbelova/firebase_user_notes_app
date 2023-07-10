@@ -44,6 +44,8 @@ dependencies:
   firebase_auth: ^4.6.3
   firebase_storage: ^11.2.4
   firebase_database: ^10.2.3
+  flutter_stripe: ^9.2.2
+  http: ^1.1.0
 
 dev_dependencies:
   flutter_test:

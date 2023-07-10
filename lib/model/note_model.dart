@@ -4,3 +4,4 @@ class NoteModel {
 
   NoteModel({required this.note, required this.path});
 }
+

@@ -76,6 +76,7 @@ class _PersonWidgetState extends State<PersonWidget> {
                 MaterialPageRoute(
                   builder: (context) => NotesPage(
                     notesRepository: NotesRepository(),
+                    authRepository: AuthRepository(),
                   ),
                 ),
               );

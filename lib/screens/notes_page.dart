@@ -1,14 +1,16 @@
 import 'package:firebase_user_notes/model/note_model.dart';
+import 'package:firebase_user_notes/screens/payment_page.dart';
 import 'package:flutter/material.dart';
 
+import '../firebase/auth_repository.dart';
 import '../firebase/notes_repository.dart';
 
 //TODO: передача репозитория, чтобы отображался профиль после возврата с экрана заметок
 
 class NotesPage extends StatefulWidget {
   final NotesRepository notesRepository;
-
-  const NotesPage({Key? key, required this.notesRepository}) : super(key: key);
+  final AuthRepository authRepository;
+  const NotesPage({Key? key, required this.notesRepository, required this.authRepository}) : super(key: key);
 
   @override
   State<NotesPage> createState() => _NotesPageState();
@@ -44,10 +46,10 @@ class _NotesPageState extends State<NotesPage> {
   Future<void> _addNote() async {
     if (_textController.text.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(
-        content: Text('Введите текст заметки'),
-      ),
-    );
+        const SnackBar(
+          content: Text('Введите текст заметки'),
+        ),
+      );
     } else {
       await widget.notesRepository.write(_textController.text);
       _textController.clear();
@@ -120,6 +122,19 @@ class _NotesPageState extends State<NotesPage> {
                     },
                     itemCount: _notes.length,
                   ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => PaymentPage(
+                            authRepository: AuthRepository()
+                        ),
+                      ),
+                    );
+                  },
+                  child: Text("Оплата"),
                 ),
               ],
             ),

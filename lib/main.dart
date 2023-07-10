@@ -3,6 +3,8 @@ import 'package:firebase_user_notes/firebase/auth_repository.dart';
 import 'package:firebase_user_notes/screens/login_page.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_stripe/flutter_stripe.dart';
+import 'keys.dart';
 import 'model/user_preferences.dart';
 import 'globals/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -14,8 +16,9 @@ Future main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-
   await UserPreferences().init();
+  Stripe.publishableKey = stripePubKey;
+  await Stripe.instance.applySettings();
   runApp(RegistrationApp());
 }
 
