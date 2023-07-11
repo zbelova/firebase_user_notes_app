@@ -14,7 +14,6 @@ class NotesRepository {
     await ref.push().set(note);
   }
 
-  //TODO: сделать чтение, редактирование и удаление записей из базы
   Stream<List<NoteModel>> readAll() {
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
