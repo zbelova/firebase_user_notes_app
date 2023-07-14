@@ -6,9 +6,9 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:firebase_user_notes/firebase/auth_repository.dart';
+import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import '../firebase/notes_repository.dart';
+import '../data/repositories/notes_repository.dart';
 import '../keys.dart';
 
 //TODO: решить проблему с mounted

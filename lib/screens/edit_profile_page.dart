@@ -7,7 +7,7 @@ import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
 import '../model/user_model.dart';
-import '../firebase/auth_repository.dart';
+import '../data/repositories/auth_repository.dart';
 import '../widgets/form_widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
@@ -49,15 +49,15 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   Future<void> _initUser() async {
-    //TODO: сделать получение пользователя из firebase
-    if (loggedIn) {
+
+    //if (loggedIn) {
       //print('init user');
       widget.profilesRepository.read().listen((_handleDataEvent));
 
-      setState(() {});
-    } else {
-      _user = UserModel(email: '', password: '');
-    }
+      //setState(() {});
+    //} else {
+      //_user = UserModel(email: '', password: '');
+    //}
     // setState(() {});
   }
 

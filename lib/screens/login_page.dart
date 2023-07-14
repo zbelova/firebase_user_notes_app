@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/firebase/auth_repository.dart';
+import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import '../model/user_preferences.dart';
 import '../widgets/form_widgets.dart';
@@ -323,10 +323,8 @@ class _LoginPage extends State<LoginPage> {
       if (loginResult == 'Идентификация успешна') {
         text = 'Вы успешно вошли';
         color = Colors.green;
-        UserPreferences().setLoggedIn(true);
         UserPreferences().setRememberLoggedIn(_remember!);
         //FirebaseAuth.instance.currentUser
-        UserPreferences().setUserAccessToken(FirebaseAuth.instance.currentUser!.uid);
         Navigator.of(context).pushAndRemoveUntil(
           MaterialPageRoute(builder: (context) => ProfilePage(authRepository: widget.authRepository,)),
           (Route<dynamic> route) => false,

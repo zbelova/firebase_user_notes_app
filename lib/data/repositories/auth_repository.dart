@@ -20,9 +20,6 @@ class AuthRepository {
     }
     return "Ошибка";
 
-      //user.credential.accessToken; //сохранять в префс для проверки залогиненности
-      //FirebaseAuth.instance.currentUser //сохранять в префс для проверки залогиненности
-
   }
 
 
@@ -70,7 +67,7 @@ class AuthRepository {
       await user.updatePassword(newPassword);
       return true;
     } catch(e) {
-      print(e);
+     // print(e);
       // В случае ошибки выводим сообщение об ошибке
       return false;
     }

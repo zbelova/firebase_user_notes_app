@@ -1,11 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_user_notes/firebase/auth_repository.dart';
-import 'package:firebase_user_notes/firebase/notes_repository.dart';
+import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
+import 'package:firebase_user_notes/data/repositories/notes_repository.dart';
 import 'package:firebase_user_notes/model/user_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import '../firebase/profiles_repository.dart';
-import '../model/user_preferences.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
 import '../widgets/form_widgets.dart';
@@ -16,7 +15,6 @@ class ProfilePage extends StatelessWidget {
 
   ProfilePage({super.key, required this.authRepository});
 
-  //user = user ?? UserPreferences().getUserObject(); //если не передан пользователь в качестве аргумента, то открывается страница текущего пользователя приложения
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +23,6 @@ class ProfilePage extends StatelessWidget {
 }
 
 class PersonWidget extends StatefulWidget {
-  //bool myPage;
   final ProfilesRepository profilesRepository = ProfilesRepository();
 
   PersonWidget({super.key});
@@ -217,8 +214,6 @@ class _PersonWidgetState extends State<PersonWidget> {
   ElevatedButton logoutButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () {
-        UserPreferences().setLoggedIn(false);
-        UserPreferences().setLoggedInUserId(0);
         AuthRepository.logout();
         //UserPreferences().setRememberLoggedIn(false);
         Navigator.of(context).pushAndRemoveUntil(
