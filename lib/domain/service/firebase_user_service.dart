@@ -1,8 +1,9 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
-import 'package:firebase_user_notes/data/service/user_service.dart';
-import '../../model/user_model.dart';
-import '../repositories/profiles_repository.dart';
+import 'package:firebase_user_notes/domain/service/user_service.dart';
+import '../../data/repositories/profiles_repository.dart';
+import '../model/user_model.dart';
+
 
 class FirebaseUserService implements UserService {
   ProfilesRepository _profilesRepository = ProfilesRepository();

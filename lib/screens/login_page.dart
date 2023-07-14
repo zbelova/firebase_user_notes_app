@@ -2,7 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
-import '../model/user_preferences.dart';
+import '../data/user_preferences.dart';
 import '../widgets/form_widgets.dart';
 import 'edit_profile_page.dart';
 

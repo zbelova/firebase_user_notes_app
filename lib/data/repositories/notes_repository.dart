@@ -1,6 +1,6 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_database/firebase_database.dart';
-import 'package:firebase_user_notes/model/note_model.dart';
+import 'package:firebase_user_notes/domain/model/note_model.dart';
 
 class NotesRepository {
   Future<void> write(String note) async {

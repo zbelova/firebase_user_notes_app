@@ -1,4 +1,6 @@
-import '../../model/user_model.dart';
+
+
+import '../model/user_model.dart';
 
 abstract class UserService {
   Future<String> login(String email, String password);

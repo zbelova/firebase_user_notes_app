@@ -4,7 +4,7 @@ import 'package:firebase_user_notes/data/repositories/notes_repository.dart';
 import 'package:firebase_user_notes/model/user_model.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../firebase/profiles_repository.dart';
+import '../data/repositories/profiles_repository.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
 import '../widgets/form_widgets.dart';
@@ -32,24 +32,16 @@ class PersonWidget extends StatefulWidget {
 }
 
 class _PersonWidgetState extends State<PersonWidget> {
-  UserModel _user = UserModel();
+  Future<UserModel> _user = UserModel() as Future<UserModel>;
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
-  User fbUser = FirebaseAuth.instance.currentUser!;
   String id = '';
 
   @override
   void initState() {
-    // id = UserPreferences().getUserAccessToken()!;
-    widget.profilesRepository.read().listen((_handleDataEvent));
+    _user = widget.profilesRepository.get();
     super.initState();
   }
 
-  void _handleDataEvent(UserModel user) {
-    setState(() {
-      print('user = $user');
-      _user = user;
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -168,7 +160,7 @@ class _PersonWidgetState extends State<PersonWidget> {
         );
       }));
 
-  Widget _buildPortraitProfile(BuildContext context, UserModel user) {
+  Widget _buildPortraitProfile(BuildContext context, Future<UserModel> user) {
    // print('user = $user');
     return ListView(
       children: [
