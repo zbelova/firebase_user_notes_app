@@ -41,7 +41,7 @@ class UserModel {
   });
 
   Widget buildPhotoImage() {
-    // print('buildPhotoImage');
+     //print('buildPhotoImage');
     return Container(
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(100),

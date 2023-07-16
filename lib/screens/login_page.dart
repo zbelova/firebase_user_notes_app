@@ -113,9 +113,9 @@ class _LoginPage extends State<LoginPage> {
                           //   backgroundColor: Color(0xFFE3003D),
                           // ),
                           onPressed: () async {
-                            await Navigator.of(context).push(
-                              MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
-                            );
+                            // await Navigator.of(context).push(
+                            //   MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
+                            // );
                           },
                           child: const Text('Пройти регистрацию', style: TextStyle(fontSize: 16)),
                         ),
@@ -213,9 +213,9 @@ class _LoginPage extends State<LoginPage> {
                                     //   backgroundColor: Color(0xFFE3003D),
                                     // ),
                                     onPressed: () async {
-                                      await Navigator.of(context).push(
-                                        MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
-                                      );
+                                      // await Navigator.of(context).push(
+                                      //   MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
+                                      // );
                                     },
                                     child: const Text(
                                       'Пройти регистрацию',

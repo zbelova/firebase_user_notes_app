@@ -32,6 +32,7 @@ class FirebaseUserService implements UserService {
   @override
   Future<UserModel> loadUser() async {
     UserModel user = await _profilesRepository.get();
+    print(FirebaseAuth.instance.currentUser!.email!);
     user.email = FirebaseAuth.instance.currentUser!.email!;
     return user;
   }

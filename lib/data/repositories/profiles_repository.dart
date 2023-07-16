@@ -12,9 +12,11 @@ class ProfilesRepository {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
       final profileSnapshot = await ref.get();
+      print(profileSnapshot.key);
       if (profileSnapshot.value == null) {
         return UserModel();
       } else {
+        print((profileSnapshot.value as Map<String, dynamic>)["name"]);
         return UserModel(
           path: profileSnapshot.key,
           name: (profileSnapshot.value as Map<String, dynamic>)["name"]  ?? '',
