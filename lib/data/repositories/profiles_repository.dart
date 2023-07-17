@@ -11,21 +11,24 @@ class ProfilesRepository {
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
-      final profileSnapshot = await ref.get();
-      print(profileSnapshot.key);
-      if (profileSnapshot.value == null) {
+      final snapshot = await ref.get();
+
+      if (snapshot.value == null) {
         return UserModel();
       } else {
-        print((profileSnapshot.value as Map<String, dynamic>)["name"]);
-        return UserModel(
-          path: profileSnapshot.key,
-          name: (profileSnapshot.value as Map<String, dynamic>)["name"]  ?? '',
-          phone: (profileSnapshot.value as Map<String, dynamic>)["phone"]  ?? '',
-          city: (profileSnapshot.value as Map<String, dynamic>)["city"] ?? '',
-          aboutSelf: (profileSnapshot.value as Map<String, dynamic>)["aboutSelf"]?? '',
-          birthDate: (profileSnapshot.value as Map<String, dynamic>)["birthDate"] ?? '',
-          photo: (profileSnapshot.value as Map<String, dynamic>)["photo"]?? 'lib/assets/default.jpg',
-        );
+        final result = (snapshot.value as Map?);
+
+        return result!.keys.map((key) => UserModel(
+          path: key,
+          name: result[key]["name"]  ?? '',
+          phone: result[key]["phone"]  ?? '',
+          city: result[key]["city"] ?? '',
+          aboutSelf: result[key]["aboutSelf"]?? '',
+          birthDate: result[key]["birthDate"] ?? '',
+          photo: result[key]["photo"]?? 'lib/assets/default.jpg',
+        )).toList()[0];
+
+
       }
     } catch (e) {
       print(e);
