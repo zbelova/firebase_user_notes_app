@@ -36,4 +36,9 @@ class DefaultUserInteractor implements UserInteractor {
   Future<UserModel> loadUser() async {
     return await _service.loadUser();
   }
+
+  @override
+  Future<void> editUser(UserModel user) async {
+    await _service.editUser(user);
+  }
 }

@@ -12,8 +12,13 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   EditProfileCubit(this._interactor) : super(const InitialEditProfileState());
 
   Future<void> fetchData() async {
+    //print("fetchData");
     emit(LoadedEditProfileState(await _interactor.loadUser()));
   }
+
+  // Future<void> editUser(UserModel user) async {
+  //   emit(LoadedEditProfileState(await _interactor.editUser(user))
+  // }
 }
 
 // Базовое состояние экрана

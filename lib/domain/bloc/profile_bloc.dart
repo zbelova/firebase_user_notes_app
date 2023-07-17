@@ -14,6 +14,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   Future<void> fetchData() async {
     emit(LoadedProfileState(await _interactor.loadUser()));
   }
+
 }
 
 // Базовое состояние экрана

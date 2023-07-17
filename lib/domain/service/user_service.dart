@@ -12,4 +12,6 @@ abstract class UserService {
   Future<void> logout();
 
   Future<UserModel> loadUser();
+
+  Future<void> editUser(UserModel user);
 }

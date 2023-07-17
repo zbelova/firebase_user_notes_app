@@ -4,7 +4,6 @@ import 'package:firebase_user_notes/data/repositories/notes_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../data/repositories/profiles_repository.dart';
 import '../di/config.dart';
 import '../domain/bloc/profile_bloc.dart';
 import '../domain/model/user_model.dart';
@@ -95,63 +94,6 @@ class _ProfilePageState extends State<ProfilePage> {
 
   );
 
-  // @override
-  // Widget build(BuildContext context) {
-  //   return Scaffold(
-  //     extendBodyBehindAppBar: true,
-  //     appBar: PreferredSize(
-  //       preferredSize: const Size.fromHeight(45),
-  //       child: AppBar(
-  //         title: const Text('Профиль'),
-  //       ),
-  //     ),
-  //     floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-  //     floatingActionButton: Container(
-  //       height: 50,
-  //       margin: const EdgeInsets.all(10),
-  //       child: ElevatedButton(
-  //         onPressed: () {
-  //           if (mounted) {
-  //             Navigator.push(
-  //               context,
-  //               MaterialPageRoute(
-  //                 builder: (context) => NotesPage(
-  //                   notesRepository: NotesRepository(),
-  //                   authRepository: AuthRepository(),
-  //                 ),
-  //               ),
-  //             );
-  //           }
-  //         },
-  //         child: const Center(
-  //           child: Text('Мои заметки'),
-  //         ),
-  //       ),
-  //     ),
-  //     body: SafeArea(
-  //       child: Container(
-  //         decoration: const BoxDecoration(
-  //           image: DecorationImage(
-  //             image: AssetImage(
-  //               'lib/assets/bg2.jpg',
-  //             ),
-  //             fit: BoxFit.cover,
-  //           ),
-  //         ),
-  //         child: OrientationBuilder(
-  //           builder: (context, orientation) {
-  //             if (orientation == Orientation.portrait) {
-  //               return _buildPortraitProfile(context, _user);
-  //             } else {
-  //               return _buildLandscapeProfile(context, _user);
-  //             }
-  //           },
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
   Widget _buildLandscapeProfile(BuildContext context, UserModel user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
         return ListView(
           children: [
@@ -182,7 +124,6 @@ class _ProfilePageState extends State<ProfilePage> {
                           ProfileTextFieldView("Email", user.email),
                           if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name),
                           if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
-                          //if (user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", user.birthDate),
                           if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
                         ],
                       ),
@@ -236,8 +177,8 @@ class _ProfilePageState extends State<ProfilePage> {
         BlocBuilder<ProfileCubit, ProfileState>(
           builder: (ctx, state) {
             if (state is LoadedProfileState) {
-              print('state.user = ${state.user}');
-              // Показываем список, когда рецепты подргрузились
+              //print('state.user = ${state.user}');
+              // Показываем список, когда юзер подргрузился
               return Column(
                 children: [
                   Row(

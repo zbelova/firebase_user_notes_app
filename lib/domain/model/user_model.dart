@@ -8,8 +8,8 @@ class UserModel {
   final String name;
   final String phone;
   String email;
-  //final String password;
-  //final String passwordOld;
+  final String password;
+  final String passwordOld;
   final String birthDate;
   final String city;
   final String aboutSelf;
@@ -19,26 +19,26 @@ class UserModel {
   UserModel({this.name = '',
     this.phone = '',
     this.email = '',
-    //this.password = '',
-    //this.passwordOld = '',
+    this.password = '',
+    this.passwordOld = '',
     this.city = '',
     this.aboutSelf = '',
     this.photo = 'lib/assets/default.jpg',
     this.birthDate = '',
     this.path});
 
-  UserModel.fromDB({
-    this.name = '',
-    this.phone = '',
-    //this.password = '',
-    this.city = '',
-    this.aboutSelf = '',
-    this.photo = 'lib/assets/default.jpg',
-    this.birthDate = '',
-    this.path,
-    this.email = '',
-    //this.passwordOld = '',
-  });
+  // UserModel.fromDB({
+  //   this.name = '',
+  //   this.phone = '',
+  //   this.password = '',
+  //   this.city = '',
+  //   this.aboutSelf = '',
+  //   this.photo = 'lib/assets/default.jpg',
+  //   this.birthDate = '',
+  //   this.path,
+  //   this.email = '',
+  //   //this.passwordOld = '',
+  // });
 
   Widget buildPhotoImage() {
      //print('buildPhotoImage');

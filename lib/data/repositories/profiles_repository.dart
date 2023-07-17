@@ -3,8 +3,6 @@ import 'package:firebase_database/firebase_database.dart';
 
 import '../../domain/model/user_model.dart';
 
-
-
 class ProfilesRepository {
   Future<UserModel> get() async {
 
@@ -17,7 +15,7 @@ class ProfilesRepository {
         return UserModel();
       } else {
         final result = (snapshot.value as Map?);
-
+//print(result);
         return result!.keys.map((key) => UserModel(
           path: key,
           name: result[key]["name"]  ?? '',
@@ -67,14 +65,14 @@ class ProfilesRepository {
   //   }
   // }
 
-  Future<void> edit(UserModel user) async {
-    try {
-      final id = FirebaseAuth.instance.currentUser?.uid;
-      if (id == null) return;
-      final ref = FirebaseDatabase.instance.ref("profiles/$id");
-      await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate, "photo": user.photo});
-    } catch (e) {
-      //  print(e);
-    }
-  }
+  // Future<void> edit(UserModel user) async {
+  //   try {
+  //     final id = FirebaseAuth.instance.currentUser?.uid;
+  //     if (id == null) return;
+  //     final ref = FirebaseDatabase.instance.ref("profiles/$id");
+  //     await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate, "photo": user.photo});
+  //   } catch (e) {
+  //     //  print(e);
+  //   }
+  // }
 }
