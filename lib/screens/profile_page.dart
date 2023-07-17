@@ -5,6 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../data/repositories/profiles_repository.dart';
+import '../di/config.dart';
 import '../domain/bloc/profile_bloc.dart';
 import '../domain/model/user_model.dart';
 import '../widgets/profile_widgets.dart';
@@ -13,7 +14,6 @@ import 'login_page.dart';
 import 'notes_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  final ProfilesRepository profilesRepository = ProfilesRepository();
 
   ProfilePage({super.key, required AuthRepository authRepository});
 
@@ -22,9 +22,9 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  UserModel _user = UserModel();
+  final UserModel _user = UserModel();
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
-  String id = '';
+  final _cubit = getIt<ProfileCubit>();
 
   @override
   void initState() {
@@ -35,7 +35,7 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) => ProfileCubit(),
+      create: (_) => _cubit,
       child: _content(),
     );
   }
@@ -293,16 +293,16 @@ class _ProfilePageState extends State<ProfilePage> {
   ElevatedButton editButton(BuildContext context, UserModel user) {
     return ElevatedButton(
       onPressed: () async {
-        // if (mounted) {
-        //   await Navigator.push(
-        //     context,
-        //     MaterialPageRoute(
-        //       builder: (context) => EditProfilePage(
-        //         authRepository: AuthRepository(),
-        //       ),
-        //     ),
-        //   );
-        // }
+        if (mounted) {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => EditProfilePage(
+                authRepository: AuthRepository(),
+              ),
+            ),
+          );
+        }
 
       },
       //child: Text("Редактировать"),

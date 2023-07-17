@@ -1,10 +1,11 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/domain/service/user_service.dart';
+import 'package:injectable/injectable.dart';
 import '../../data/repositories/profiles_repository.dart';
 import '../model/user_model.dart';
 
-
+@LazySingleton(as: UserService)
 class FirebaseUserService implements UserService {
   ProfilesRepository _profilesRepository = ProfilesRepository();
   AuthRepository _authRepository = AuthRepository();

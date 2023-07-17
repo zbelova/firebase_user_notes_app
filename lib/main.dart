@@ -4,6 +4,7 @@ import 'package:firebase_user_notes/screens/login_page.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
+import 'di/config.dart';
 import 'keys.dart';
 import 'data/user_preferences.dart';
 import 'globals/theme/app_theme.dart';
@@ -19,6 +20,7 @@ Future main() async {
   await UserPreferences().init();
   Stripe.publishableKey = stripePubKey;
   await Stripe.instance.applySettings();
+  configureDependencies();
   runApp(RegistrationApp());
 }
 
