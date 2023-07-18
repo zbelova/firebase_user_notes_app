@@ -1,30 +1,23 @@
-import 'dart:io';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:intl/intl.dart';
-import '../data/repositories/profiles_repository.dart';
 import '../di/config.dart';
 import '../domain/bloc/edit_profile_bloc.dart';
-import '../domain/bloc/profile_bloc.dart';
 import '../domain/interactor/user_interactor.dart';
 import '../domain/model/user_model.dart';
 import '../data/repositories/auth_repository.dart';
-import '../widgets/form_widgets.dart';
-import '../widgets/profile_widgets.dart';
+import '../globals/widgets/display_widgets.dart';
+import '../globals/widgets/form_widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
   final AuthRepository authRepository;
 
-  //final ProfilesRepository profilesRepository = ProfilesRepository();
-
   EditProfilePage({super.key, required this.authRepository});
 
   @override
-  //State<EditProfilePage> createState() => EditProfileScreen(profilesRepository: profilesRepository);
   State<EditProfilePage> createState() => EditProfileScreen();
 }
 
@@ -39,47 +32,23 @@ class EditProfileScreen extends State<EditProfilePage> {
   final _cubit = getIt<EditProfileCubit>();
   final UserInteractor _interactor = getIt<UserInteractor>();
 
-  var text;
   var color;
   XFile? image;
   UploadTask? uploadTask;
   final _approve = false;
   final ImagePicker picker = ImagePicker();
 
-  //UserModel _user = UserModel();
-  bool _userLoaded = false;
+  UserModel _user = UserModel();
 
   @override
   void initState() {
     super.initState();
   }
 
-  //TODO убрать в interactor
-  Future uploadImageToFirebase(XFile _image, state) async {
-    FirebaseAuth auth = FirebaseAuth.instance;
-    String uid = auth.currentUser!.uid;
-    final path = 'avatars/$uid/${_image.name}';
-    final file = File(_image.path);
-    final ref = FirebaseStorage.instance.ref().child(path);
-    setState(() {
-      state.user.photo = 'lib/assets/default.jpg';
-      uploadTask = ref.putFile(file);
-    });
-
-    final snapshot = await uploadTask!.whenComplete(() {});
-
-    final urlDownload = await snapshot.ref.getDownloadURL();
-    ;
-    setState(() {
-      state.user.photo = urlDownload;
-    });
-  }
-
   @override
   void dispose() {
     dateInput.dispose();
     oldPasswordInput.dispose();
-
     super.dispose();
   }
 
@@ -119,25 +88,12 @@ class EditProfileScreen extends State<EditProfilePage> {
         ),
       ),
       body: SafeArea(
-        child: BlocBuilder<EditProfileCubit, EditProfileState>(
-          builder: (ctx, state) {
-        //    print('state is $state');
-            if (state is LoadedEditProfileState) {
-              //print('state is LoadedProfileState');
-              return OrientationBuilder(
-                builder: (context, orientation) {
-                  if (orientation == Orientation.portrait) {
-                    return _buildPortraitEditProfile(state);
-                  } else {
-                    return _buildLandscapeEditProfile(state);
-                  }
-                },
-              );
+        child: OrientationBuilder(
+          builder: (context, orientation) {
+            if (orientation == Orientation.portrait) {
+              return _buildPortraitEditProfile();
             } else {
-              //print('state is not LoadedEditProfileState');
-              // Вначале показываем виджет с загрузкой
-              ctx.read<EditProfileCubit>().fetchData();
-              return const Center(child: CircularProgressIndicator());
+              return _buildLandscapeEditProfile();
             }
           },
         ),
@@ -145,7 +101,7 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
-  Widget _buildPortraitEditProfile(state) {
+  Widget _buildPortraitEditProfile() {
     return Container(
       decoration: const BoxDecoration(
         image: DecorationImage(
@@ -156,32 +112,32 @@ class EditProfileScreen extends State<EditProfilePage> {
         ),
       ),
       padding: const EdgeInsets.all(20),
-      child: _buildForm(state),
+      child: _buildForm(),
     );
   }
 
-  Widget _buildForm(state) {
-    print ('_buildForm');
+  Widget _buildForm() {
+    //print('_buildForm');
     return Form(
         key: _formkey,
         child: ListView(
-          children: [buildFormColumn(state)],
+          children: [buildFormColumn()],
         ));
   }
 
-  Widget buildFormColumn(state) {
+  Widget buildFormColumn() {
     //print('buildFormColumn');
     return Column(
       children: [
-        if (loggedIn) buildPhotoField(state),
+        if (loggedIn) buildPhotoField(),
         Container(
-          child: _buildTextFieldsColumn(state),
+          child: _buildTextFieldsColumn(),
         ),
       ],
     );
   }
 
-  Widget _buildLandscapeEditProfile(state) {
+  Widget _buildLandscapeEditProfile() {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
         decoration: const BoxDecoration(
@@ -218,7 +174,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                           mainAxisAlignment: MainAxisAlignment.start,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            buildPhotoField(state),
+                            buildPhotoField(),
                           ],
                         ),
                       ),
@@ -227,7 +183,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                       ),
                       Expanded(
                         flex: 4,
-                        child: _buildTextFieldsColumn(state),
+                        child: _buildTextFieldsColumn(),
                       ),
                     ],
                   )),
@@ -238,38 +194,53 @@ class EditProfileScreen extends State<EditProfilePage> {
     });
   }
 
-  Column _buildTextFieldsColumn(state) {
-   // print('_buildTextFieldsColumn');
-    return Column(
-      children: [
-        buildEmailField(state),
-        const SizedBox(
-          height: 14,
-        ),
-        if (loggedIn) _buildOldPasswordField(state),
-        if (loggedIn)
-          const SizedBox(
-            height: 14,
-          ),
-        buildPasswordField(state),
-        const SizedBox(
-          height: 14,
-        ),
-        if (loggedIn) buildAdditionalFields(state),
-        if (!loggedIn) buildApproveField(),
-        ElevatedButton(
-            onPressed: () async {
-              if (_formkey.currentState!.validate()) {
-                _formkey.currentState!.save();
-//print('state is $state');
-                loggedIn ? await _interactor.editUser(state.user) : await _interactor.signUp(state.user.email, state.user.password);
-              }
-            },
-            child: Text(
-              loggedIn ? 'Сохранить' : 'Зарегистроваться',
-              style: const TextStyle(fontSize: 16),
-            ))
-      ],
+  Widget _buildTextFieldsColumn() {
+    return BlocBuilder<EditProfileCubit, EditProfileState>(
+      builder: (ctx, state) {
+        //    print('state is $state');
+        if (state is LoadedEditProfileState) {
+          //TODO не отображается изначальная дата рождения
+          dateInput.text = state.user.birthDate;
+          //_user.photo = state.user.photo;
+          print('state is LoadedProfileState');
+          return Column(
+            children: [
+              buildEmailField(state),
+              const SizedBox(
+                height: 14,
+              ),
+              if (loggedIn) _buildOldPasswordField(state),
+              if (loggedIn)
+                const SizedBox(
+                  height: 14,
+                ),
+              buildPasswordField(state),
+              const SizedBox(
+                height: 14,
+              ),
+              if (loggedIn) buildAdditionalFields(state),
+              if (!loggedIn) buildApproveField(),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (_formkey.currentState!.validate()) {
+                      _formkey.currentState!.save();
+                      loggedIn ? await _interactor.editUser(_user) : await _interactor.signUp(_user.email, _user.password);
+                      Navigator.pop(context);
+                    }
+                  },
+                  child: Text(
+                    loggedIn ? 'Сохранить' : 'Зарегистроваться',
+                    style: const TextStyle(fontSize: 16),
+                  ))
+            ],
+          );
+        } else {
+          //print('state is not LoadedEditProfileState');
+          // Вначале показываем виджет с загрузкой
+          ctx.read<EditProfileCubit>().fetchData();
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
   }
 
@@ -286,7 +257,7 @@ class EditProfileScreen extends State<EditProfilePage> {
       //   return null;
       // },
       onSaved: (value) {
-        state.user.name = value!;
+        _user.name = value!;
       },
     );
   }
@@ -318,10 +289,10 @@ class EditProfileScreen extends State<EditProfilePage> {
           //_user.birthDate = pickedDate;
 
           String formattedDate = DateFormat('dd.MM.yyyy').format(pickedDate);
-          state.user.birthDate = formattedDate;
-          setState(() {
+          _user.birthDate = formattedDate;
+          //setState(() {
             dateInput.text = formattedDate; //set output date to TextField value.
-          });
+          //});
         } else {}
       },
     );
@@ -334,7 +305,7 @@ class EditProfileScreen extends State<EditProfilePage> {
       decoration: const InputDecoration(prefixIcon: PrefixWidget('Город')),
       keyboardType: TextInputType.text,
       onSaved: (value) {
-        state.user.city = value!;
+        _user.city = value!;
       },
     );
   }
@@ -362,52 +333,73 @@ class EditProfileScreen extends State<EditProfilePage> {
         keyboardType: TextInputType.multiline,
         maxLines: 3,
         onSaved: (value) {
-          state.user.aboutSelf = value!;
+          _user.aboutSelf = value!;
         },
       ),
     );
   }
 
-  Widget buildPhotoField(state) {
-    // print('buildPhotoField');
-    return Column(
-      children: [
-        if (image != null) ...[
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: 150,
-              child: state.user.buildPhotoImage(),
-            ),
-          ),
-        ] else ...[
-          if (state.user.photo != 'lib/assets/default.jpg') ...[
-            SizedBox(width: 150, child: state.user.buildPhotoImage()),
-          ] else ...[
-            const Text(
-              "Не выбрано",
-              style: TextStyle(fontSize: 20, color: Colors.white),
-            ),
-          ],
-        ],
-        const SizedBox(
-          height: 10,
-        ),
-        ElevatedButton(
-          style: ElevatedButton.styleFrom(
-            //backgroundColor: const Color(0xFF7821E3),
-            backgroundColor: const Color(0xFF2160E3),
-          ),
-          onPressed: () {
-            photoAlert(state);
-          },
-          child: const Text('Выбрать фото', style: TextStyle(fontSize: 16)),
-        ),
-        const SizedBox(
-          height: 10,
-        ),
-      ],
+  Widget buildPhotoField() {
+    //print('buildPhotoField');
+
+   return BlocBuilder<EditProfileCubit, EditProfileState>(
+      builder: (ctx, state) {
+           // print('state is $state');
+        if (state is LoadedEditProfileState) {
+          //print('state is LoadedProfileState');
+          return Column(
+            children: [
+              if (image != null) ...[
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: SizedBox(
+                    width: 150,
+                    child: PhotoImage(photoFile: image),
+                  ),
+                ),
+              ] else ...[
+                if (state.user.photo.isNotEmpty) ...[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: SizedBox(
+                      width: 150,
+                      child: PhotoImage(photoURL: state.user.photo),
+                    ),
+                  ),
+                ] else
+                  const Text(
+                    "Не выбрано",
+                    style: TextStyle(fontSize: 20, color: Colors.white),
+                  ),
+              ],
+              const SizedBox(
+                height: 10,
+              ),
+              ElevatedButton(
+                style: ElevatedButton.styleFrom(
+                  //backgroundColor: const Color(0xFF7821E3),
+                  backgroundColor: const Color(0xFF2160E3),
+                ),
+                onPressed: () {
+                  photoAlert();
+                },
+                child: const Text('Выбрать фото', style: TextStyle(fontSize: 16)),
+              ),
+              const SizedBox(
+                height: 10,
+              ),
+            ],
+          );
+        } else {
+          //print('state is not LoadedEditProfileState');
+          // Вначале показываем виджет с загрузкой
+          //TODO: сделать так, чтобы не было видно, что происходит загрузка
+          ctx.read<EditProfileCubit>().fetchData();
+          return const Center(child: CircularProgressIndicator());
+        }
+      },
     );
+
   }
 
   Widget buildApproveField() {
@@ -431,36 +423,34 @@ class EditProfileScreen extends State<EditProfilePage> {
   }
 
   Widget buildAdditionalFields(state) {
-    return
-        Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              buildNameField(state),
-              const SizedBox(
-                height: 14,
-              ),
-              buildContactField(state),
-              const SizedBox(
-                height: 14,
-              ),
-              const SizedBox(
-                height: 14,
-              ),
-              buildDateTimeField(state),
-              const SizedBox(
-                height: 14,
-              ),
-              buildCityField(state),
-              const SizedBox(
-                height: 14,
-              ),
-              buildAboutField(state),
-              const SizedBox(
-                height: 14,
-              ),
-            ],
-          );
-
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        buildNameField(state),
+        const SizedBox(
+          height: 14,
+        ),
+        buildContactField(state),
+        const SizedBox(
+          height: 14,
+        ),
+        const SizedBox(
+          height: 14,
+        ),
+        buildDateTimeField(state),
+        const SizedBox(
+          height: 14,
+        ),
+        buildCityField(state),
+        const SizedBox(
+          height: 14,
+        ),
+        buildAboutField(state),
+        const SizedBox(
+          height: 14,
+        ),
+      ],
+    );
   }
 
   Widget buildEmailField(state) {
@@ -473,7 +463,7 @@ class EditProfileScreen extends State<EditProfilePage> {
             keyboardType: TextInputType.emailAddress,
             validator: validateEmail,
             onSaved: (value) {
-              state.user.email = value!;
+              _user.email = value!;
             },
           );
   }
@@ -491,7 +481,7 @@ class EditProfileScreen extends State<EditProfilePage> {
         return null;
       },
       onSaved: (value) {
-        state.user.phone = value!;
+        _user.phone = value!;
       },
     );
   }
@@ -511,11 +501,9 @@ class EditProfileScreen extends State<EditProfilePage> {
       },
       onSaved: (value) {
         if (loggedIn && value!.isEmpty) {
-          state.user.password = state.user.password;
-        } else if (loggedIn && value!.isNotEmpty) {
-          state.user.password = value;
-        } else if (!loggedIn && value!.isNotEmpty) {
-          state.user.password = value;
+          _user.password = state.user.password;
+        } else if (value!.isNotEmpty) {
+          _user.password = value;
         }
       },
     );
@@ -528,24 +516,25 @@ class EditProfileScreen extends State<EditProfilePage> {
       decoration: InputDecoration(prefixIcon: PrefixWidget('Старый пароль')),
       keyboardType: TextInputType.visiblePassword,
       onSaved: (value) {
-        state.user.passwordOld = value!;
+        _user.passwordOld = value!;
       },
     );
   }
 
 //we can upload image from camera or from gallery based on parameter
-  Future getImage(ImageSource media, state) async {
+  Future getImage(ImageSource media) async {
     var img = await picker.pickImage(source: media);
-    uploadImageToFirebase(img!, state);
+    //uploadImageToFirebase(img!, state);
 
     setState(() {
       image = img;
+      _user.photoFile = image;
       //print('img');
     });
   }
 
 //show popup dialog
-  void photoAlert(state) {
+  void photoAlert() {
     showDialog(
         context: context,
         builder: (BuildContext context) {
@@ -562,7 +551,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                       //if user click this button, user can upload image from gallery
                       onPressed: () {
                         Navigator.pop(context);
-                        getImage(ImageSource.gallery, state);
+                        getImage(ImageSource.gallery);
                       },
                       child: const Row(
                         children: [
@@ -575,7 +564,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                       //if user click this button. user can upload image from camera
                       onPressed: () {
                         Navigator.pop(context);
-                        getImage(ImageSource.camera, state);
+                        getImage(ImageSource.camera);
                       },
                       child: const Row(
                         children: [

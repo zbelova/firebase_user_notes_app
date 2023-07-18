@@ -7,13 +7,12 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../di/config.dart';
 import '../domain/bloc/profile_bloc.dart';
 import '../domain/model/user_model.dart';
-import '../widgets/profile_widgets.dart';
+import '../globals/widgets/display_widgets.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
 import 'notes_page.dart';
 
 class ProfilePage extends StatefulWidget {
-
   ProfilePage({super.key, required AuthRepository authRepository});
 
   @override
@@ -21,7 +20,7 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  final UserModel _user = UserModel();
+  //final UserModel _user = UserModel();
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
   final _cubit = getIt<ProfileCubit>();
 
@@ -40,120 +39,119 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _content() => Scaffold(
-    extendBodyBehindAppBar: true,
-    appBar: PreferredSize(
-      preferredSize: const Size.fromHeight(45),
-      child: AppBar(
-        title: const Text('Профиль'),
-      ),
-    ),
-    floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-    floatingActionButton: Container(
-      height: 50,
-      margin: const EdgeInsets.all(10),
-      child: ElevatedButton(
-        onPressed: () {
-          if (mounted) {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (context) => NotesPage(
-                  notesRepository: NotesRepository(),
-                  authRepository: AuthRepository(),
-                ),
-              ),
-            );
-          }
-        },
-        child: const Center(
-          child: Text('Мои заметки'),
-        ),
-      ),
-    ),
-    body: SafeArea(
-      child: Container(
-        decoration: const BoxDecoration(
-          image: DecorationImage(
-            image: AssetImage(
-              'lib/assets/bg2.jpg',
-            ),
-            fit: BoxFit.cover,
+        extendBodyBehindAppBar: true,
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(45),
+          child: AppBar(
+            title: const Text('Профиль'),
           ),
         ),
-        child: OrientationBuilder(
-          builder: (context, orientation) {
-            if (orientation == Orientation.portrait) {
-              return _buildPortraitProfile(context, _user);
-            } else {
-              return _buildLandscapeProfile(context, _user);
-            }
-          },
+        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        floatingActionButton: Container(
+          height: 50,
+          margin: const EdgeInsets.all(10),
+          child: ElevatedButton(
+            onPressed: () {
+              if (mounted) {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => NotesPage(
+                      notesRepository: NotesRepository(),
+                      authRepository: AuthRepository(),
+                    ),
+                  ),
+                );
+              }
+            },
+            child: const Center(
+              child: Text('Мои заметки'),
+            ),
+          ),
         ),
-      ),
-    ),
+        body: SafeArea(
+          child: Container(
+            decoration: const BoxDecoration(
+              image: DecorationImage(
+                image: AssetImage(
+                  'lib/assets/bg2.jpg',
+                ),
+                fit: BoxFit.cover,
+              ),
+            ),
+            child: OrientationBuilder(
+              builder: (context, orientation) {
+                if (orientation == Orientation.portrait) {
+                  return _buildPortraitProfile(context);
+                } else {
+                  return _buildLandscapeProfile(context);
+                }
+              },
+            ),
+          ),
+        ),
+      );
 
-  );
-
-  Widget _buildLandscapeProfile(BuildContext context, UserModel user) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
+  Widget _buildLandscapeProfile(BuildContext context) => CupertinoScrollbar(child: LayoutBuilder(builder: (context, constraints) {
         return ListView(
           children: [
             Padding(
               padding: constraints.maxWidth > 1000 ? const EdgeInsets.only(top: 15) : const EdgeInsets.only(top: 15, left: 35),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Expanded(
-                    flex: 2,
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 25,
+              child: BlocBuilder<ProfileCubit, ProfileState>(builder: (ctx, state) {
+                if (state is LoadedProfileState) {
+                  //print('state.user = ${state.user}');
+                  // Показываем список, когда юзер подргрузился
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Expanded(
+                        flex: 2,
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 25,
+                            ),
+                            _buildTopImage(state.user),
+                          ],
                         ),
-                        _buildTopImage(user),
-                      ],
-                    ),
-                  ),
-                  Expanded(
-                    flex: 4,
-                    child: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 20),
-                      child: Column(
-                        //crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          ProfileTextFieldView("Email", user.email),
-                          if (user.name.isNotEmpty) ProfileTextFieldView("Имя", user.name),
-                          if (user.city.isNotEmpty) ProfileTextFieldView("Город", user.city),
-                          if (user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", user.aboutSelf),
-                        ],
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      children: [
-                        const SizedBox(
-                          height: 22,
+                      Expanded(
+                        flex: 4,
+                        child: Padding(
+                          padding: const EdgeInsets.only(left: 20, right: 20),
+                          child: _buildProfileFields(state),
                         ),
-                        editButton(context, user),
-                        const SizedBox(
-                          height: 10,
+                      ),
+                      Expanded(
+                        child: Column(
+                          children: [
+                            const SizedBox(
+                              height: 22,
+                            ),
+                            editButton(context),
+                            const SizedBox(
+                              height: 10,
+                            ),
+                            logoutButton(context),
+                          ],
                         ),
-                        logoutButton(context),
-                      ],
-                    ),
-                  )
-                ],
-              ),
+                      )
+                    ],
+                  );
+                } else {
+                  // Вначале показываем виджет с загрузкой
+                  ctx.read<ProfileCubit>().fetchData();
+                  return const Center(child: CircularProgressIndicator());
+                }
+              }),
             ),
           ],
         );
       }));
 
-
-
-  Widget _buildPortraitProfile(BuildContext context, UserModel user) {
-   // print('user = $user');
+  Widget _buildPortraitProfile(BuildContext context) {
+    // print('user = $user');
     return ListView(
       children: [
         Padding(
@@ -161,7 +159,7 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
-              editButton(context, user),
+              editButton(context),
               const SizedBox(
                 width: 10,
               ),
@@ -172,8 +170,6 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(
           height: 20,
         ),
-
-
         BlocBuilder<ProfileCubit, ProfileState>(
           builder: (ctx, state) {
             if (state is LoadedProfileState) {
@@ -189,16 +185,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ),
                   Padding(
                     padding: const EdgeInsets.all(30.0),
-                    child: Column(
-                      //crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        ProfileTextFieldView("Email", state.user.email),
-                        if (state.user.name.isNotEmpty) ProfileTextFieldView("Имя", state.user.name),
-                        if (state.user.city.isNotEmpty) ProfileTextFieldView("Город", state.user.city),
-                        //if (user.birthDate.isNotEmpty) _buildProfileTextFieldView("Дата рождения", user.birthDate ),
-                        if (state.user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", state.user.aboutSelf),
-                      ],
-                    ),
+                    child: _buildProfileFields(state),
                   ),
                 ],
               );
@@ -209,7 +196,19 @@ class _ProfilePageState extends State<ProfilePage> {
             }
           },
         ),
+      ],
+    );
+  }
 
+  Widget _buildProfileFields(LoadedProfileState state) {
+    return Column(
+      //crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        ProfileTextFieldView("Email", state.user.email),
+        if (state.user.name.isNotEmpty) ProfileTextFieldView("Имя", state.user.name),
+        if (state.user.city.isNotEmpty) ProfileTextFieldView("Город", state.user.city),
+        if (state.user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", state.user.birthDate),
+        if (state.user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", state.user.aboutSelf),
       ],
     );
   }
@@ -231,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  ElevatedButton editButton(BuildContext context, UserModel user) {
+  ElevatedButton editButton(BuildContext context) {
     return ElevatedButton(
       onPressed: () async {
         if (mounted) {
@@ -244,7 +243,6 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
           );
         }
-
       },
       //child: Text("Редактировать"),
 
@@ -256,7 +254,7 @@ class _ProfilePageState extends State<ProfilePage> {
     //print('user = $user');
     return SizedBox(
       width: 200,
-      child: user.buildPhotoImage(),
+      child: PhotoImage(photoURL: user.photo,),
     );
   }
 }
