@@ -1,30 +1,32 @@
-import 'package:firebase_auth/firebase_auth.dart';
+
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
+//import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import '../data/user_preferences.dart';
+import '../domain/interactor/user_interactor.dart';
 import '../globals/widgets/form_widgets.dart';
+import '../di/config.dart';
+import 'edit_profile_page.dart';
 
 class LoginPage extends StatefulWidget {
-  final AuthRepository authRepository;
+  //final AuthRepository authRepository;
 
-  const LoginPage({super.key, required this.authRepository});
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPage();
 }
 
 class _LoginPage extends State<LoginPage> {
-  final formKey = GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   String email = '';
   String password = '';
-  String? correctName;
-  String? correctPassword;
   bool? _remember;
+  final UserInteractor _interactor = getIt<UserInteractor>();
 
-  Future<String> _login(email, password) async {
-    return await widget.authRepository.login(email, password);
-  }
+  // Future<String> _login(email, password) async {
+  //   return await widget.authRepository.login(email, password);
+  // }
 
   @override
   void initState() {
@@ -68,7 +70,7 @@ class _LoginPage extends State<LoginPage> {
             child: Container(
               padding: const EdgeInsets.symmetric(horizontal: 30),
               child: Form(
-                  key: formKey,
+                  key: _formKey,
                   child: Column(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -99,7 +101,14 @@ class _LoginPage extends State<LoginPage> {
                             //backgroundColor: const Color(0xFF7821E3),
                             backgroundColor: const Color(0xFF2160E3),
                           ),
-                          onPressed: _validateLogin,
+                          //onPressed: _validateLogin,
+                          onPressed: () async {
+                            if (_formKey.currentState!.validate()) {
+                              _formKey.currentState!.save();
+                              _authLogin();
+                              //Navigator.pop(context);
+                            }
+                          },
                           child: const Text('Войти', style: TextStyle(fontSize: 16)),
                         ),
                       ),
@@ -112,9 +121,9 @@ class _LoginPage extends State<LoginPage> {
                           //   backgroundColor: Color(0xFFE3003D),
                           // ),
                           onPressed: () async {
-                            // await Navigator.of(context).push(
-                            //   MaterialPageRoute(builder: (context) => EditProfilePage(authRepository: AuthRepository(),)),
-                            // );
+                            await Navigator.of(context).push(
+                               MaterialPageRoute(builder: (context) => EditProfilePage()),
+                             );
                           },
                           child: const Text('Пройти регистрацию', style: TextStyle(fontSize: 16)),
                         ),
@@ -148,7 +157,7 @@ class _LoginPage extends State<LoginPage> {
                   right: 80,
                 ),
                 child: Form(
-                    key: formKey,
+                    key: _formKey,
                     child: Row(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -196,7 +205,7 @@ class _LoginPage extends State<LoginPage> {
                                       //backgroundColor: const Color(0xFF7821E3),
                                       backgroundColor: const Color(0xFF2160E3),
                                     ),
-                                    onPressed: _validateLogin,
+                                    onPressed: _authLogin,
                                     child: const Text(
                                       'Войти',
                                       style: TextStyle(fontSize: 18),
@@ -311,21 +320,21 @@ class _LoginPage extends State<LoginPage> {
 
 
 
-  Future<void> _validateLogin() async {
+  Future<void> _authLogin() async {
     Color color = Colors.red;
     String text = '';
     String loginResult;
 
-    if (formKey.currentState!.validate()) {
-
-      loginResult = await _login(email, password);
-      if (loginResult == 'Идентификация успешна') {
+    if (_formKey.currentState!.validate()) {
+      loginResult= await _interactor.login(email, password);
+      //loginResult = await _login(email, password);
+      if (loginResult == 'success') {
         text = 'Вы успешно вошли';
         color = Colors.green;
         UserPreferences().setRememberLoggedIn(_remember!);
         //FirebaseAuth.instance.currentUser
         Navigator.of(context).pushAndRemoveUntil(
-          MaterialPageRoute(builder: (context) => ProfilePage(authRepository: widget.authRepository,)),
+          MaterialPageRoute(builder: (context) => ProfilePage()),
           (Route<dynamic> route) => false,
         );
       } else {

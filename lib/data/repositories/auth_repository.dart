@@ -3,22 +3,14 @@ import 'package:firebase_auth/firebase_auth.dart';
 class AuthRepository {
   Future<String> login(String email, String password) async {
     try {
-      final user = await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
+      await FirebaseAuth.instance.signInWithEmailAndPassword(email: email, password: password);
      // print(user);
       //UserPreferences().setUserAccessToken(user.credential!.accessToken!);
-      return "Идентификация успешна";
+      return "success";
     } on FirebaseAuthException catch (e) {
       // Код ошибка для случая, если пользователь не найден
-      if (e.code == 'user-not-found') {
-        return "Пользователь не найден";
-        // Код ошибка для случая, если пользователь ввёл неверный пароль
-      } else if (e.code == 'wrong-password') {
-        return "Неверный пароль";
-      }
-    } catch(e) {
-      return "Ошибка";
+      return e.code;
     }
-    return "Ошибка";
 
   }
 

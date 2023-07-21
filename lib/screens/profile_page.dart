@@ -13,7 +13,7 @@ import 'login_page.dart';
 import 'notes_page.dart';
 
 class ProfilePage extends StatefulWidget {
-  ProfilePage({super.key, required AuthRepository authRepository});
+  ProfilePage({super.key});
 
   @override
   State<ProfilePage> createState() => _ProfilePageState();
@@ -221,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
         Navigator.of(context).pushAndRemoveUntil(
             MaterialPageRoute(
                 builder: (context) => LoginPage(
-                      authRepository: AuthRepository(),
+
                     )),
             (Route<dynamic> route) => false);
       },
@@ -238,7 +238,7 @@ class _ProfilePageState extends State<ProfilePage> {
             context,
             MaterialPageRoute(
               builder: (context) => EditProfilePage(
-                authRepository: AuthRepository(),
+
               ),
             ),
           );

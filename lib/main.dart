@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/screens/login_page.dart';
 import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -55,10 +54,10 @@ class RegistrationApp extends StatelessWidget {
 
   Widget buildHomePage() {
     if (goToMainPage) {
-      return ProfilePage(authRepository: AuthRepository());
+      return ProfilePage();
     } else {
 
-      return LoginPage(authRepository: AuthRepository(),);
+      return LoginPage();
     }
   }
 }

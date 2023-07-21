@@ -1,5 +1,4 @@
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -8,14 +7,13 @@ import '../di/config.dart';
 import '../domain/bloc/edit_profile_bloc.dart';
 import '../domain/interactor/user_interactor.dart';
 import '../domain/model/user_model.dart';
-import '../data/repositories/auth_repository.dart';
 import '../globals/widgets/display_widgets.dart';
 import '../globals/widgets/form_widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
-  final AuthRepository authRepository;
 
-  EditProfilePage({super.key, required this.authRepository});
+
+  EditProfilePage({super.key});
 
   @override
   State<EditProfilePage> createState() => EditProfileScreen();
@@ -27,6 +25,7 @@ class EditProfileScreen extends State<EditProfilePage> {
   TextEditingController dateInput = TextEditingController();
   TextEditingController oldPasswordInput = TextEditingController();
 
+  //TODO перенести в интерактор или сервис
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
 
   final _cubit = getIt<EditProfileCubit>();
@@ -34,7 +33,6 @@ class EditProfileScreen extends State<EditProfilePage> {
 
   var color;
   XFile? image;
-  UploadTask? uploadTask;
   final _approve = false;
   final ImagePicker picker = ImagePicker();
 
