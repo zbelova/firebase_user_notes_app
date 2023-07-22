@@ -11,8 +11,8 @@ import '../model/user_model.dart';
 
 @LazySingleton(as: UserService)
 class FirebaseUserService implements UserService {
-  ProfilesRepository _profilesRepository = ProfilesRepository();
-  AuthRepository _authRepository = AuthRepository();
+  final ProfilesRepository _profilesRepository = ProfilesRepository();
+  final AuthRepository _authRepository = AuthRepository();
 
   @override
   Future<String> login(String email, String password) async {
@@ -42,9 +42,11 @@ class FirebaseUserService implements UserService {
     return user;
   }
 
+  //TODO перенести редактирование профиля в репозиторий
+
   @override
   Future<void> editUser(UserModel user) async {
-    print(user.photoFile?.name);
+    // print(user.photoFile?.name);
     try {
       // print(user.birthDate);
       final id = FirebaseAuth.instance.currentUser?.uid;
@@ -60,7 +62,7 @@ class FirebaseUserService implements UserService {
   }
 
   Future uploadImageToFirebase(UserModel user, DatabaseReference profilesRef) async {
-    print(user.photoFile?.name);
+    // print(user.photoFile?.name);
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final path = 'avatars/$id/${user.photoFile?.name}';
@@ -71,10 +73,10 @@ class FirebaseUserService implements UserService {
       final snapshot = await uploadTask.whenComplete(() {});
 
       final urlDownload = await snapshot.ref.getDownloadURL();
-print(urlDownload);
+//print(urlDownload);
       await profilesRef.child(id!).update({"photo": urlDownload});
     } catch (e) {
-        print(e);
+      //       print(e);
     }
   }
 }

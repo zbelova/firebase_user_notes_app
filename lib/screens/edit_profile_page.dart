@@ -114,27 +114,6 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
-  Widget _buildForm() {
-    //print('_buildForm');
-    return Form(
-        key: _formkey,
-        child: ListView(
-          children: [buildFormColumn()],
-        ));
-  }
-
-  Widget buildFormColumn() {
-    //print('buildFormColumn');
-    return Column(
-      children: [
-        if (loggedIn) buildPhotoField(),
-        Container(
-          child: _buildTextFieldsColumn(),
-        ),
-      ],
-    );
-  }
-
   Widget _buildLandscapeEditProfile() {
     return LayoutBuilder(builder: (context, constraints) {
       return Container(
@@ -148,15 +127,15 @@ class EditProfileScreen extends State<EditProfilePage> {
         ),
         padding: constraints.maxWidth > 1000
             ? const EdgeInsets.only(
-                left: 80,
-                top: 20,
-                right: 80,
-              )
+          left: 80,
+          top: 20,
+          right: 80,
+        )
             : const EdgeInsets.only(
-                left: 40,
-                top: 20,
-                right: 40,
-              ),
+          left: 40,
+          top: 20,
+          right: 40,
+        ),
         child: Scrollbar(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -192,10 +171,33 @@ class EditProfileScreen extends State<EditProfilePage> {
     });
   }
 
+  Widget _buildForm() {
+    //print('_buildForm');
+    return Form(
+        key: _formkey,
+        child: ListView(
+          children: [buildFormColumn()],
+        ));
+  }
+
+  Widget buildFormColumn() {
+    //print('buildFormColumn');
+    return Column(
+      children: [
+        if (loggedIn) buildPhotoField(),
+        Container(
+          child: _buildTextFieldsColumn(),
+        ),
+      ],
+    );
+  }
+
+
+
   Widget _buildTextFieldsColumn() {
     return BlocBuilder<EditProfileCubit, EditProfileState>(
       builder: (ctx, state) {
-        //    print('state is $state');
+       //     print('state is $state');
         if (state is LoadedEditProfileState) {
           //TODO не отображается изначальная дата рождения
           dateInput.text = state.user.birthDate;
@@ -233,7 +235,8 @@ class EditProfileScreen extends State<EditProfilePage> {
             ],
           );
         } else {
-          //print('state is not LoadedEditProfileState');
+          print('state is not LoadedEditProfileState');
+          //TODO сделать состояние для регистрации
           // Вначале показываем виджет с загрузкой
           ctx.read<EditProfileCubit>().fetchData();
           return const Center(child: CircularProgressIndicator());
