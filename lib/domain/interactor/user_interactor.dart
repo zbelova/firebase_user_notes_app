@@ -12,4 +12,6 @@ Future<String> login(String email, String password);
   Future<UserModel> loadUser();
 
   Future<void> editUser(UserModel user);
+
+  Future<bool> isLogged();
 }

@@ -79,4 +79,9 @@ class FirebaseUserService implements UserService {
       //       print(e);
     }
   }
+
+  @override
+  Future<bool> isLogged() async {
+    return FirebaseAuth.instance.currentUser != null;
+  }
 }

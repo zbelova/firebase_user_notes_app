@@ -13,12 +13,13 @@ class EditProfileCubit extends Cubit<EditProfileState> {
 
   Future<void> fetchData() async {
     //print("fetchData");
-    emit(LoadedEditProfileState(await _interactor.loadUser()));
+    if(await _interactor.isLogged()) {
+      emit(LoadedEditProfileState(await _interactor.loadUser())); }
+    else {
+      emit(const SignUpEditProfileState());
+      return;
+    }
   }
-
-  // Future<void> editUser(UserModel user) async {
-  //   emit(LoadedEditProfileState(await _interactor.editUser(user))
-  // }
 }
 
 // Базовое состояние экрана
@@ -44,4 +45,9 @@ class LoadedEditProfileState extends EditProfileState {
 
   @override
   int get hashCode => user.hashCode;
+}
+
+// Регистрация нового пользователя
+class SignUpEditProfileState extends EditProfileState {
+  const SignUpEditProfileState();
 }

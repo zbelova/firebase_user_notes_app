@@ -12,4 +12,6 @@ abstract class UserService {
   Future<UserModel> loadUser();
 
   Future<void> editUser(UserModel user);
+
+  Future<bool> isLogged();
 }

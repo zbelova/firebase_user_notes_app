@@ -99,7 +99,7 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: constraints.maxWidth > 1000 ? const EdgeInsets.only(top: 15) : const EdgeInsets.only(top: 15, left: 35),
               child: BlocBuilder<ProfileCubit, ProfileState>(builder: (ctx, state) {
                 if (state is LoadedProfileState) {
-                  //print('state.user = ${state.user}');
+                  print('state.user = ${state.user}');
                   // Показываем список, когда юзер подргрузился
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -140,6 +140,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   );
                 } else {
+                  print('state = $state');
                   // Вначале показываем виджет с загрузкой
                   ctx.read<ProfileCubit>().fetchData();
                   return const Center(child: CircularProgressIndicator());
@@ -218,12 +219,7 @@ class _ProfilePageState extends State<ProfilePage> {
       onPressed: () {
         AuthRepository.logout();
         //UserPreferences().setRememberLoggedIn(false);
-        Navigator.of(context).pushAndRemoveUntil(
-            MaterialPageRoute(
-                builder: (context) => LoginPage(
-
-                    )),
-            (Route<dynamic> route) => false);
+        Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
       },
       //child: Text("Выйти"),
       child: const Icon(Icons.logout),
@@ -237,9 +233,7 @@ class _ProfilePageState extends State<ProfilePage> {
           await Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => EditProfilePage(
-
-              ),
+              builder: (context) => EditProfilePage(),
             ),
           );
         }
@@ -251,10 +245,12 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildTopImage(UserModel user) {
-    //print('user = $user');
+    print('user = $user');
     return SizedBox(
       width: 200,
-      child: PhotoImage(photoURL: user.photo,),
+      child: PhotoImage(
+        photoURL: user.photo,
+      ),
     );
   }
 }

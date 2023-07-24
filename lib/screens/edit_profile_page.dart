@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -11,8 +12,6 @@ import '../globals/widgets/display_widgets.dart';
 import '../globals/widgets/form_widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
-
-
   EditProfilePage({super.key});
 
   @override
@@ -127,15 +126,15 @@ class EditProfileScreen extends State<EditProfilePage> {
         ),
         padding: constraints.maxWidth > 1000
             ? const EdgeInsets.only(
-          left: 80,
-          top: 20,
-          right: 80,
-        )
+                left: 80,
+                top: 20,
+                right: 80,
+              )
             : const EdgeInsets.only(
-          left: 40,
-          top: 20,
-          right: 40,
-        ),
+                left: 40,
+                top: 20,
+                right: 40,
+              ),
         child: Scrollbar(
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 15.0),
@@ -192,25 +191,23 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
-
-
   Widget _buildTextFieldsColumn() {
     return BlocBuilder<EditProfileCubit, EditProfileState>(
       builder: (ctx, state) {
-       //     print('state is $state');
+        //     print('state is $state');
         if (state is LoadedEditProfileState) {
           //TODO не отображается изначальная дата рождения
           dateInput.text = state.user.birthDate;
           //_user.photo = state.user.photo;
-          print('state is LoadedProfileState');
+          // print('state is LoadedProfileState');
           return Column(
             children: [
               buildEmailField(state),
               const SizedBox(
                 height: 14,
               ),
-              if (loggedIn) _buildOldPasswordField(state),
-              if (loggedIn)
+              _buildOldPasswordField(state),
+
                 const SizedBox(
                   height: 14,
                 ),
@@ -218,24 +215,56 @@ class EditProfileScreen extends State<EditProfilePage> {
               const SizedBox(
                 height: 14,
               ),
-              if (loggedIn) buildAdditionalFields(state),
-              if (!loggedIn) buildApproveField(),
+             buildAdditionalFields(state),
+
               ElevatedButton(
                   onPressed: () async {
                     if (_formkey.currentState!.validate()) {
                       _formkey.currentState!.save();
-                      loggedIn ? await _interactor.editUser(_user) : await _interactor.signUp(_user.email, _user.password);
-                      Navigator.pop(context);
+                      await _interactor.editUser(_user);
+                      //Navigator.pop(context);
+                      Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage()));
                     }
                   },
                   child: Text(
-                    loggedIn ? 'Сохранить' : 'Зарегистроваться',
+                    'Сохранить',
                     style: const TextStyle(fontSize: 16),
                   ))
             ],
           );
+        } else if (state is SignUpEditProfileState) {
+          //print('state is SignUpEditProfileState');
+          return Column(
+            children: [
+              buildEmailFieldNew(),
+              const SizedBox(
+                height: 14,
+              ),
+              buildPasswordFieldNew(),
+              const SizedBox(
+                height: 14,
+              ),
+              buildApproveField(),
+              ElevatedButton(
+                  onPressed: () async {
+                    if (_formkey.currentState!.validate()) {
+                      _formkey.currentState!.save();
+                      await _interactor.signUp(_user.email, _user.password);
+                      Navigator.pushAndRemoveUntil(
+                        context,
+                        MaterialPageRoute(builder: (context) => ProfilePage()),
+                        (Route<dynamic> route) => false,
+                      );
+                    }
+                  },
+                  child: const Text(
+                    'Зарегистроваться',
+                    style: TextStyle(fontSize: 16),
+                  ))
+            ],
+          );
         } else {
-          print('state is not LoadedEditProfileState');
+          //print('state is not LoadedEditProfileState');
           //TODO сделать состояние для регистрации
           // Вначале показываем виджет с загрузкой
           ctx.read<EditProfileCubit>().fetchData();
@@ -292,7 +321,7 @@ class EditProfileScreen extends State<EditProfilePage> {
           String formattedDate = DateFormat('dd.MM.yyyy').format(pickedDate);
           _user.birthDate = formattedDate;
           //setState(() {
-            dateInput.text = formattedDate; //set output date to TextField value.
+          dateInput.text = formattedDate; //set output date to TextField value.
           //});
         } else {}
       },
@@ -343,9 +372,9 @@ class EditProfileScreen extends State<EditProfilePage> {
   Widget buildPhotoField() {
     //print('buildPhotoField');
 
-   return BlocBuilder<EditProfileCubit, EditProfileState>(
+    return BlocBuilder<EditProfileCubit, EditProfileState>(
       builder: (ctx, state) {
-           // print('state is $state');
+        // print('state is $state');
         if (state is LoadedEditProfileState) {
           //print('state is LoadedProfileState');
           return Column(
@@ -400,7 +429,6 @@ class EditProfileScreen extends State<EditProfilePage> {
         }
       },
     );
-
   }
 
   Widget buildApproveField() {
@@ -469,6 +497,18 @@ class EditProfileScreen extends State<EditProfilePage> {
           );
   }
 
+  Widget buildEmailFieldNew() {
+    return TextFormField(
+      key: const ValueKey('_user.email'),
+      decoration: const InputDecoration(prefixIcon: PrefixWidget('Email')),
+      keyboardType: TextInputType.emailAddress,
+      validator: validateEmail,
+      onSaved: (value) {
+        _user.email = value!;
+      },
+    );
+  }
+
   Widget buildContactField(state) {
     return TextFormField(
       key: const ValueKey('_user.phone'),
@@ -490,7 +530,7 @@ class EditProfileScreen extends State<EditProfilePage> {
   Widget buildPasswordField(state) {
     return TextFormField(
       key: const ValueKey('_user.password'),
-      decoration: InputDecoration(prefixIcon: loggedIn ? PrefixWidget('Новый пароль') : PrefixWidget('Пароль')),
+      decoration: InputDecoration(prefixIcon: loggedIn ? const PrefixWidget('Новый пароль') : const PrefixWidget('Пароль')),
       keyboardType: TextInputType.visiblePassword,
       validator: (value) {
         if (value!.isEmpty && !loggedIn) {
@@ -510,11 +550,32 @@ class EditProfileScreen extends State<EditProfilePage> {
     );
   }
 
+  Widget buildPasswordFieldNew() {
+    return TextFormField(
+      key: const ValueKey('_user.password'),
+      decoration: const InputDecoration(prefixIcon: PrefixWidget('Пароль')),
+      keyboardType: TextInputType.visiblePassword,
+      validator: (value) {
+        if (value!.isEmpty) {
+          return "Придуймайте пароль";
+          // } else if (value.isNotEmpty && loggedIn && oldPasswordInput.text != value) {
+          //   return 'Пароли не совпадают';
+        }
+        return null;
+      },
+      onSaved: (value) {
+        if (value!.isNotEmpty) {
+          _user.password = value;
+        }
+      },
+    );
+  }
+
   Widget _buildOldPasswordField(state) {
     return TextFormField(
       key: const ValueKey('_user.passwordOld'),
       controller: oldPasswordInput,
-      decoration: InputDecoration(prefixIcon: PrefixWidget('Старый пароль')),
+      decoration: const InputDecoration(prefixIcon: PrefixWidget('Старый пароль')),
       keyboardType: TextInputType.visiblePassword,
       onSaved: (value) {
         _user.passwordOld = value!;
