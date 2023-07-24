@@ -199,7 +199,7 @@ class EditProfileScreen extends State<EditProfilePage> {
           //TODO не отображается изначальная дата рождения
           dateInput.text = state.user.birthDate;
           //_user.photo = state.user.photo;
-          // print('state is LoadedProfileState');
+        //   print('state is LoadedProfileState');
           return Column(
             children: [
               buildEmailField(state),
@@ -425,7 +425,7 @@ class EditProfileScreen extends State<EditProfilePage> {
           // Вначале показываем виджет с загрузкой
           //TODO: сделать так, чтобы не было видно, что происходит загрузка
           ctx.read<EditProfileCubit>().fetchData();
-          return const Center(child: CircularProgressIndicator());
+          return const Center(child: SizedBox());
         }
       },
     );

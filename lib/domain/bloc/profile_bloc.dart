@@ -12,6 +12,7 @@ class ProfileCubit extends Cubit<ProfileState> {
   ProfileCubit(this._interactor) : super(const InitialProfileState());
 
   Future<void> fetchData() async {
+    print("fetchData");
     emit(LoadedProfileState(await _interactor.loadUser()));
   }
 

@@ -52,8 +52,10 @@ class FirebaseUserService implements UserService {
       final id = FirebaseAuth.instance.currentUser?.uid;
       if (id == null) return;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
+
       await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate});
       if (user.photoFile != null) {
+      //  print("uploadImageToFirebase");
         await uploadImageToFirebase(user, ref);
       }
     } catch (e) {
@@ -62,7 +64,7 @@ class FirebaseUserService implements UserService {
   }
 
   Future uploadImageToFirebase(UserModel user, DatabaseReference profilesRef) async {
-    // print(user.photoFile?.name);
+   //  print(user.photoFile?.name);
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final path = 'avatars/$id/${user.photoFile?.name}';
@@ -76,7 +78,7 @@ class FirebaseUserService implements UserService {
 //print(urlDownload);
       await profilesRef.child(id!).update({"photo": urlDownload});
     } catch (e) {
-      //       print(e);
+        //     print(e);
     }
   }
 

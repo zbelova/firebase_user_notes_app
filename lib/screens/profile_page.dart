@@ -99,7 +99,8 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: constraints.maxWidth > 1000 ? const EdgeInsets.only(top: 15) : const EdgeInsets.only(top: 15, left: 35),
               child: BlocBuilder<ProfileCubit, ProfileState>(builder: (ctx, state) {
                 if (state is LoadedProfileState) {
-                  print('state.user = ${state.user}');
+           //       print('state.user = ${state.user}');
+             //     print('state = $state');
                   // Показываем список, когда юзер подргрузился
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
@@ -140,7 +141,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   );
                 } else {
-                  print('state = $state');
+            //      print('state = $state');
                   // Вначале показываем виджет с загрузкой
                   ctx.read<ProfileCubit>().fetchData();
                   return const Center(child: CircularProgressIndicator());
@@ -202,11 +203,13 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildProfileFields(LoadedProfileState state) {
+ //   print('state.user = ${state.user}');
     return Column(
       //crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ProfileTextFieldView("Email", state.user.email),
         if (state.user.name.isNotEmpty) ProfileTextFieldView("Имя", state.user.name),
+        if (state.user.phone != '+7') ProfileTextFieldView("Телефон", state.user.phone),
         if (state.user.city.isNotEmpty) ProfileTextFieldView("Город", state.user.city),
         if (state.user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", state.user.birthDate),
         if (state.user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", state.user.aboutSelf),
@@ -245,7 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Widget _buildTopImage(UserModel user) {
-    print('user = $user');
+   print('user = $user');
     return SizedBox(
       width: 200,
       child: PhotoImage(

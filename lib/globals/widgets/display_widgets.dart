@@ -70,6 +70,7 @@ class PhotoImage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    //print('photoURL = $photoURL');
     return Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(100),
