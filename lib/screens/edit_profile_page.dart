@@ -24,11 +24,13 @@ class EditProfileScreen extends State<EditProfilePage> {
   TextEditingController dateInput = TextEditingController();
   TextEditingController oldPasswordInput = TextEditingController();
 
+
   //TODO перенести в интерактор или сервис
-  final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
+
 
   final _cubit = getIt<EditProfileCubit>();
   final UserInteractor _interactor = getIt<UserInteractor>();
+  bool loggedIn = false;
 
   var color;
   XFile? image;
@@ -37,9 +39,21 @@ class EditProfileScreen extends State<EditProfilePage> {
 
   UserModel _user = UserModel();
 
+  Future<bool> logged() async {
+    if (await _interactor.isLogged() == true) {
+      return true;
+    }
+    else {
+      return false;
+    }
+  }
+
   @override
   void initState() {
     super.initState();
+    logged().then((value) => setState(() {
+          loggedIn = value;
+        }));
   }
 
   @override
