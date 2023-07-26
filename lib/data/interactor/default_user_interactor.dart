@@ -1,13 +1,10 @@
-import 'package:firebase_user_notes/domain/service/firebase_user_service.dart';
 import 'package:firebase_user_notes/domain/service/user_service.dart';
 import 'package:injectable/injectable.dart';
-
 import '../../domain/interactor/user_interactor.dart';
 import '../../domain/model/user_model.dart';
 
 @Injectable(as: UserInteractor)
 class DefaultUserInteractor implements UserInteractor {
-  //final UserService _userService = FirebaseUserService();
   final UserService _service;
 
   DefaultUserInteractor(this._service);

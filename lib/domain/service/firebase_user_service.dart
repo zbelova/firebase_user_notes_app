@@ -37,7 +37,6 @@ class FirebaseUserService implements UserService {
   @override
   Future<UserModel> loadUser() async {
     UserModel user = await _profilesRepository.get();
-    //print(FirebaseAuth.instance.currentUser!.email!);
     user.email = FirebaseAuth.instance.currentUser!.email!;
     return user;
   }
@@ -46,25 +45,19 @@ class FirebaseUserService implements UserService {
 
   @override
   Future<void> editUser(UserModel user) async {
-    // print(user.photoFile?.name);
     try {
-      // print(user.birthDate);
       final id = FirebaseAuth.instance.currentUser?.uid;
       if (id == null) return;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
 
       await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate});
       if (user.photoFile != null) {
-      //  print("uploadImageToFirebase");
         await uploadImageToFirebase(user, ref);
       }
-    } catch (e) {
-      //  print(e);
-    }
+    } catch (e) {}
   }
 
-  Future uploadImageToFirebase(UserModel user, DatabaseReference profilesRef) async {
-   //  print(user.photoFile?.name);
+  Future<void> uploadImageToFirebase(UserModel user, DatabaseReference profilesRef) async {
     try {
       final id = FirebaseAuth.instance.currentUser?.uid;
       final path = 'avatars/$id/${user.photoFile?.name}';
@@ -75,11 +68,8 @@ class FirebaseUserService implements UserService {
       final snapshot = await uploadTask.whenComplete(() {});
 
       final urlDownload = await snapshot.ref.getDownloadURL();
-//print(urlDownload);
       await profilesRef.child(id!).update({"photo": urlDownload});
-    } catch (e) {
-        //     print(e);
-    }
+    } catch (e) {}
   }
 
   @override
