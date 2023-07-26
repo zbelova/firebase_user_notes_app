@@ -12,12 +12,16 @@
 import 'package:get_it/get_it.dart' as _i1;
 import 'package:injectable/injectable.dart' as _i2;
 
-import '../data/interactor/default_user_interactor.dart' as _i6;
-import '../domain/bloc/edit_profile_bloc.dart' as _i7;
-import '../domain/bloc/profile_bloc.dart' as _i8;
-import '../domain/interactor/user_interactor.dart' as _i5;
-import '../domain/service/firebase_user_service.dart' as _i4;
-import '../domain/service/user_service.dart' as _i3;
+import '../data/interactor/default_notes_interactor.dart' as _i8;
+import '../data/interactor/default_user_interactor.dart' as _i10;
+import '../domain/bloc/edit_profile_bloc.dart' as _i11;
+import '../domain/bloc/profile_bloc.dart' as _i12;
+import '../domain/interactor/notes_interactor.dart' as _i7;
+import '../domain/interactor/user_interactor.dart' as _i9;
+import '../domain/service/firebase_notes_service.dart' as _i4;
+import '../domain/service/firebase_user_service.dart' as _i6;
+import '../domain/service/notes_service.dart' as _i3;
+import '../domain/service/user_service.dart' as _i5;
 
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars
@@ -32,12 +36,15 @@ _i1.GetIt $initGetIt(
     environment,
     environmentFilter,
   );
-  gh.lazySingleton<_i3.UserService>(() => _i4.FirebaseUserService());
-  gh.factory<_i5.UserInteractor>(
-      () => _i6.DefaultUserInteractor(gh<_i3.UserService>()));
-  gh.factory<_i7.EditProfileCubit>(
-      () => _i7.EditProfileCubit(gh<_i5.UserInteractor>()));
-  gh.factory<_i8.ProfileCubit>(
-      () => _i8.ProfileCubit(gh<_i5.UserInteractor>()));
+  gh.lazySingleton<_i3.NotesService>(() => _i4.FirebaseNotesService());
+  gh.lazySingleton<_i5.UserService>(() => _i6.FirebaseUserService());
+  gh.factory<_i7.NotesInteractor>(
+      () => _i8.DefaultNotesInteractor(gh<_i3.NotesService>()));
+  gh.factory<_i9.UserInteractor>(
+      () => _i10.DefaultUserInteractor(gh<_i5.UserService>()));
+  gh.factory<_i11.EditProfileCubit>(
+      () => _i11.EditProfileCubit(gh<_i9.UserInteractor>()));
+  gh.factory<_i12.ProfileCubit>(
+      () => _i12.ProfileCubit(gh<_i9.UserInteractor>()));
   return getIt;
 }

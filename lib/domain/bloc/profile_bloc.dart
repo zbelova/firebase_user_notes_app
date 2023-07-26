@@ -41,3 +41,5 @@ class LoadedProfileState extends ProfileState {
   @override
   int get hashCode => user.hashCode;
 }
+
+class NotesEvent {}
