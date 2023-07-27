@@ -3,7 +3,7 @@ import '../model/note_model.dart';
 abstract class NotesService {
   Future<void> write(String note);
 
-  Future<Stream<List<NoteModel>>> readAll();
+  Stream<List<NoteModel>> readAll();
 
   Future<void> edit(String note, String key);
 

@@ -56,9 +56,7 @@ class _ProfilePageState extends State<ProfilePage> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => NotesPage(
-                      notesRepository: NotesRepository(),
-                      authRepository: AuthRepository(),
+                    builder: (context) => const NotesPage(
                     ),
                   ),
                 );

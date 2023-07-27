@@ -15,8 +15,8 @@ class DefaultNotesInteractor implements NotesInteractor {
   }
 
   @override
-  Future<Stream<List<NoteModel>>> readAll() async {
-    return await _service.readAll();
+  Stream<List<NoteModel>> readAll() {
+    return _service.readAll();
   }
 
   @override

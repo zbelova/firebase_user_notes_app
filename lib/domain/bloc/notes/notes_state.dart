@@ -1,21 +1,21 @@
 
 // Базовое состояние экрана
-import '../model/note_model.dart';
+import '../../model/note_model.dart';
 
-class NotesState {
+sealed class NotesState {
   const NotesState();
 }
 
 // Начальное состояние экрана
-class InitialNotesState extends NotesState {
-  const InitialNotesState();
+class LoadingNotesState extends NotesState {
+  const LoadingNotesState();
 }
 
 // Состояние экрана с уже загруженными данными
 class LoadedNotesState extends NotesState {
   final List<NoteModel> notes;
 
-  const LoadedNotesState(this.notes);
+  const LoadedNotesState({ required this.notes});
 
   @override
   bool operator ==(Object other) =>
@@ -25,3 +25,5 @@ class LoadedNotesState extends NotesState {
   @override
   int get hashCode => notes.hashCode;
 }
+
+class NotesErrorState extends NotesState {}

@@ -1,5 +1,5 @@
 
-import '../model/note_model.dart';
+import '../../model/note_model.dart';
 
 class NotesEvent {
   const NotesEvent();
@@ -10,7 +10,7 @@ class LoadNotesEvent extends NotesEvent {}
 class AddNoteEvent extends NotesEvent {
   final NoteModel note;
 
-  const AddNoteEvent(this.note);
+  const AddNoteEvent({required this.note});
 
   @override
   bool operator ==(Object other) =>
@@ -24,7 +24,7 @@ class AddNoteEvent extends NotesEvent {
 class EditNoteEvent extends NotesEvent {
   final NoteModel note;
 
-  const EditNoteEvent(this.note);
+  const EditNoteEvent({required this.note});
 
   @override
   bool operator ==(Object other) =>
@@ -36,15 +36,16 @@ class EditNoteEvent extends NotesEvent {
 }
 
 class DeleteNoteEvent extends NotesEvent {
-  final NoteModel note;
+  final String path;
 
-  const DeleteNoteEvent(this.note);
+  DeleteNoteEvent({required this.path});
+
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is DeleteNoteEvent && runtimeType == other.runtimeType && note == other.note;
+          other is DeleteNoteEvent && runtimeType == other.runtimeType && path == other.path;
 
   @override
-  int get hashCode => note.hashCode;
+  int get hashCode => path.hashCode;
 }

@@ -3,22 +3,27 @@ import 'dart:async';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/domain/model/note_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import '../data/repositories/notes_repository.dart';
+import '../di/config.dart';
+import '../domain/bloc/notes/notes_bloc.dart';
+import '../domain/bloc/notes/notes_state.dart';
+import '../domain/interactor/notes_interactor.dart';
 import '../keys.dart';
 
 //TODO: решить проблему с mounted
 //TODO: проверять есть ли юзер в базе данных страйп (добавить в functions)
 
 class NotesPage extends StatefulWidget {
-  final NotesRepository notesRepository;
-  final AuthRepository authRepository;
+  //final NotesRepository notesRepository;
+ // final AuthRepository authRepository;
 
-  const NotesPage({Key? key, required this.notesRepository, required this.authRepository}) : super(key: key);
+  const NotesPage({Key? key, }) : super(key: key);
 
   @override
   State<NotesPage> createState() => _NotesPageState();
@@ -26,6 +31,9 @@ class NotesPage extends StatefulWidget {
 
 class _NotesPageState extends State<NotesPage> {
   final TextEditingController _textController = TextEditingController();
+
+  final _bloc = getIt<NotesBloc>();
+  final NotesInteractor _interactor = getIt<NotesInteractor>();
 
   List<NoteModel> _notes = [];
   bool paymentLoading = false;
@@ -47,17 +55,10 @@ class _NotesPageState extends State<NotesPage> {
 
   @override
   initState() {
-    widget.notesRepository.readAll().listen((_handleDataEvent));
     getCheckPremium(context, email: fbUser.email!);
     super.initState();
     _textController.addListener(() {
       setState(() {});
-    });
-  }
-
-  void _handleDataEvent(List<NoteModel> notes) {
-    setState(() {
-      _notes = notes;
     });
   }
 
@@ -125,11 +126,11 @@ class _NotesPageState extends State<NotesPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //getStripeUser
-                paymentLoadingCheck? Expanded(
+                paymentLoadingCheck? const Expanded(
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      const CircularProgressIndicator(),
+                      CircularProgressIndicator(),
                     ],
                   ),
                 ) : paymentComplete ? _buildPremiumActive() : _buildPremiumInactive(context),
@@ -142,6 +143,26 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNotes() {
+    return BlocProvider(
+      create: (_) => _bloc,
+      child: BlocBuilder<NotesBloc, NotesState> (
+      builder: (context, state) {
+          return switch (state) {
+            LoadingNotesState() => const Center(
+              child: CircularProgressIndicator(),
+            ),
+            LoadedNotesState() => _buildNotesBloc(),
+            NotesErrorState() => const Center(
+              child: Text('Ошибка'),
+            ),
+
+    };
+        },
+      ),
+    );
+  }
+
+  Widget _buildNotesBloc() {
     return Expanded(
       child: Column(
         children: [

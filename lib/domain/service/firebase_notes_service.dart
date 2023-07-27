@@ -13,8 +13,8 @@ class FirebaseNotesService implements NotesService {
   }
 
   @override
-  Future<Stream<List<NoteModel>>> readAll() async {
-    return await _notesRepository.readAll();
+  Stream<List<NoteModel>> readAll()  {
+    return _notesRepository.readAll();
   }
 
   @override

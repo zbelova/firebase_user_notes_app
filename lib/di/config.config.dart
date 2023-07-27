@@ -15,7 +15,8 @@ import 'package:injectable/injectable.dart' as _i2;
 import '../data/interactor/default_notes_interactor.dart' as _i8;
 import '../data/interactor/default_user_interactor.dart' as _i10;
 import '../domain/bloc/edit_profile_bloc.dart' as _i11;
-import '../domain/bloc/profile_bloc.dart' as _i12;
+import '../domain/bloc/notes/notes_bloc.dart' as _i12;
+import '../domain/bloc/profile_bloc.dart' as _i13;
 import '../domain/interactor/notes_interactor.dart' as _i7;
 import '../domain/interactor/user_interactor.dart' as _i9;
 import '../domain/service/firebase_notes_service.dart' as _i4;
@@ -44,7 +45,8 @@ _i1.GetIt $initGetIt(
       () => _i10.DefaultUserInteractor(gh<_i5.UserService>()));
   gh.factory<_i11.EditProfileCubit>(
       () => _i11.EditProfileCubit(gh<_i9.UserInteractor>()));
-  gh.factory<_i12.ProfileCubit>(
-      () => _i12.ProfileCubit(gh<_i9.UserInteractor>()));
+  gh.factory<_i12.NotesBloc>(() => _i12.NotesBloc(gh<_i7.NotesInteractor>()));
+  gh.factory<_i13.ProfileCubit>(
+      () => _i13.ProfileCubit(gh<_i9.UserInteractor>()));
   return getIt;
 }
