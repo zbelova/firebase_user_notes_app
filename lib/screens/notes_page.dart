@@ -22,9 +22,11 @@ import '../keys.dart';
 
 class NotesPage extends StatefulWidget {
   //final NotesRepository notesRepository;
- // final AuthRepository authRepository;
+  // final AuthRepository authRepository;
 
-  const NotesPage({Key? key, }) : super(key: key);
+  const NotesPage({
+    Key? key,
+  }) : super(key: key);
 
   @override
   State<NotesPage> createState() => _NotesPageState();
@@ -36,7 +38,6 @@ class _NotesPageState extends State<NotesPage> {
   final _bloc = getIt<NotesBloc>();
   final NotesInteractor _interactor = getIt<NotesInteractor>();
 
-  List<NoteModel> _notes = [];
   bool paymentLoading = false;
   bool paymentComplete = false;
   bool paymentLoadingCheck = false;
@@ -50,7 +51,7 @@ class _NotesPageState extends State<NotesPage> {
   @override
   void dispose() {
     _textController.dispose();
-    if (_timer != null ) _timer!.cancel();
+    if (_timer != null) _timer!.cancel();
     super.dispose();
   }
 
@@ -71,12 +72,10 @@ class _NotesPageState extends State<NotesPage> {
         ),
       );
     } else {
-      await widget.notesRepository.write(_textController.text);
+     // await widget.notesRepository.write(_textController.text);
       _textController.clear();
     }
   }
-
-
 
   void startTimer() {
     //var duration = Duration(seconds: seconds);
@@ -127,16 +126,20 @@ class _NotesPageState extends State<NotesPage> {
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
                 //getStripeUser
-                paymentLoadingCheck? const Expanded(
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      CircularProgressIndicator(),
-                    ],
-                  ),
-                ) : paymentComplete ? _buildPremiumActive() : _buildPremiumInactive(context),
-               // _buildPremiumActive(),
-               // paymentComplete ? _buildPremiumActive() : _buildPremiumInactive(context),
+                paymentLoadingCheck
+                    ? const Expanded(
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            CircularProgressIndicator(),
+                          ],
+                        ),
+                      )
+                    : paymentComplete
+                        ? _buildPremiumActive()
+                        : _buildPremiumInactive(context),
+                // _buildPremiumActive(),
+                // paymentComplete ? _buildPremiumActive() : _buildPremiumInactive(context),
               ],
             ),
           ),
@@ -146,18 +149,17 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildNotes() {
     return BlocProvider(
       create: (_) => _bloc,
-      child: BlocBuilder<NotesBloc, NotesState> (
-      builder: (context, state) {
+      child: BlocBuilder<NotesBloc, NotesState>(
+        builder: (context, state) {
           return switch (state) {
             LoadingNotesState() => const Center(
-              child: CircularProgressIndicator(),
-            ),
+                child: CircularProgressIndicator(),
+              ),
             LoadedNotesState() => _buildNotesBloc(state),
             NotesErrorState() => const Center(
-              child: Text('Ошибка'),
-            ),
-
-    };
+                child: Text('Ошибка'),
+              ),
+          };
         },
       ),
     );
@@ -192,14 +194,15 @@ class _NotesPageState extends State<NotesPage> {
             height: 8,
           ),
           ElevatedButton(
-            onPressed: context.read<NotesBloc>().add(AddNoteEvent(_textController.text)),
+            onPressed: () async {
+              context.read<NotesBloc>().add(
+                    (AddNoteEvent(text: _textController.text)),
+                  );
+            },
             child: const Text('Добавить заметку'),
           ),
-          const SizedBox(
-            height: 8
-          ),
+          const SizedBox(height: 8),
           Expanded(
-
             child: ListView.builder(
               itemBuilder: (context, index) {
                 if (state.notes.isEmpty) {
@@ -207,9 +210,8 @@ class _NotesPageState extends State<NotesPage> {
                     child: Text('Заметок нет'),
                   );
                 } else {
-
                   return ListTile(
-                    title: _buildNote(state.notes[index], index),
+                    title: _buildNote(state, state.notes[index], index),
                   );
                 }
               },
@@ -264,8 +266,11 @@ class _NotesPageState extends State<NotesPage> {
                     style: TextStyle(color: Colors.white),
                   ),
                 ),
-                paymentLoading ? SizedBox(
-                  height: 20,): const SizedBox(),
+                paymentLoading
+                    ? SizedBox(
+                        height: 20,
+                      )
+                    : const SizedBox(),
                 paymentLoading ? const CircularProgressIndicator() : const SizedBox(),
               ],
             ),
@@ -286,13 +291,14 @@ class _NotesPageState extends State<NotesPage> {
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(10),
                 color: const Color(0xfffdc40c),
-
               ),
               child: Padding(
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    Text('Premium подписка истекает через: ', ),
+                    Text(
+                      'Premium подписка истекает через: ',
+                    ),
                     Text(
                       '$_current секунд',
                       style: const TextStyle(fontSize: 30),
@@ -302,17 +308,15 @@ class _NotesPageState extends State<NotesPage> {
               ),
             ),
           ),
-
           _buildNotes(),
         ],
       ),
     );
   }
 
-  Widget _buildNote(NoteModel note, int index) {
+  Widget _buildNote(state, NoteModel note, int index) {
     return Column(
       children: [
-
         Container(
           width: MediaQuery.of(context).size.width,
           decoration: BoxDecoration(
@@ -327,7 +331,7 @@ class _NotesPageState extends State<NotesPage> {
                   Padding(
                     padding: const EdgeInsets.only(left: 8.0),
                     child: Text(
-                      note.note,
+                      note.text,
                       style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
                     ),
                   ),
@@ -337,14 +341,16 @@ class _NotesPageState extends State<NotesPage> {
                         icon: const Icon(Icons.edit),
                         constraints: const BoxConstraints(maxWidth: 25),
                         onPressed: () {
-                          _showUpdateDialog(index);
+                          _showUpdateDialog(state, index);
                           //widget.notesRepository.edit(_textController.text, note.path);
                         },
                       ),
                       IconButton(
                         icon: const Icon(Icons.delete),
-                        onPressed: () {
-                          widget.notesRepository.remove(note.path);
+                        onPressed: () async {
+                          context.read<NotesBloc>().add(
+                            (DeleteNoteEvent(path: note.path)),
+                          );
                         },
                       ),
                     ],
@@ -356,14 +362,14 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Future _showUpdateDialog(int index) {
+  Future _showUpdateDialog(state, int index) {
     String editError = '';
     return showGeneralDialog(
       context: context,
       barrierDismissible: false,
       pageBuilder: (_, __, ___) {
         final noteController = TextEditingController();
-        noteController.text = _notes[index].note;
+        noteController.text = state.notes[index].text;
         return StatefulBuilder(
           builder: (context, setState) {
             return AlertDialog(
@@ -394,16 +400,17 @@ class _NotesPageState extends State<NotesPage> {
                     if (noteController.text.isEmpty) {
                       editError = 'Необходимо заполнить поля';
                     } else {
-                      widget.notesRepository.edit(noteController.text, _notes[index].path);
+                      //widget.notesRepository.edit(noteController.text, _notes[index].path);
+                      context.read<NotesBloc>().add(
+                            (EditNoteEvent(note: state.notes[index])),
+                          );
                       editError = 'Заметка успешно изменена';
                       color = Colors.green;
                       Navigator.pop(context);
                     }
                     setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(
-                        content: Text(editError, style: TextStyle(color: color))
-                      ),
+                      SnackBar(content: Text(editError, style: TextStyle(color: color))),
                     );
                   },
                   child: const Text('Сохранить'),
@@ -438,7 +445,7 @@ class _NotesPageState extends State<NotesPage> {
       setState(() {
         paymentLoading = false;
         paymentLoadingCheck = false;
-        premiumDeadline = (jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000) > 0 ? jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000: 0;
+        premiumDeadline = (jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000) > 0 ? jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000 : 0;
 //print(premiumDeadline);
         if (premiumDeadline > 0) {
           paymentComplete = true;
@@ -448,7 +455,7 @@ class _NotesPageState extends State<NotesPage> {
         } else {
           // _start = 0;
           _current = 0;
-          if(_timer!= null) resetTimer();
+          if (_timer != null) resetTimer();
         }
       });
     } catch (e) {

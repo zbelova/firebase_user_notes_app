@@ -25,7 +25,7 @@ class NotesRepository {
         }
         return snapshot.keys
             .map(
-              (key) => NoteModel(path: key, note: snapshot[key] as String),
+              (key) => NoteModel(path: key, text: snapshot[key] as String),
             )
             .toList();
       });

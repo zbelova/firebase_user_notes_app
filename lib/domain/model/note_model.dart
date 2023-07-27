@@ -1,7 +1,7 @@
 class NoteModel {
-  final String note;
+  final String text;
   final String path;
 
-  NoteModel({required this.note, required this.path});
+  NoteModel({required this.text, required this.path});
 }
 

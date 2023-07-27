@@ -37,7 +37,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
   FutureOr<void> _onEditEvent (EditNoteEvent event, Emitter<NotesState> emit) async {
     try {
-      await _interactor.edit(event.note.note, event.note.path);
+      await _interactor.edit(event.note.text, event.note.path);
     } catch (e) {
       emit(NotesErrorState());
     }
@@ -50,45 +50,6 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
       emit(NotesErrorState());
     }
   }
-// NotesBloc(this._interactor) : super(const LoadingNotesState()) {
-//   on<LoadNotesEvent>(_onFetchData);
-// }
-
-// NotesBloc(this._interactor) : super(LoadNotesEvent()) {
-//   on<LoadedNotesState>(_onFetchData as EventHandler<LoadedNotesState, NotesEvent>);
-// on<LoadedNotesState>() {
-//   emit(const InitialNotesState());
-//   final notes = await _interactor.readAll();
-//
-//   emit(LoadedNotesState(notes));
-// }
-
-//}
-
-
-// Future<void> fetchData() async {
-//   emit(LoadedNotesState(await _interactor.readAll ()));
-// }
-
-// PostsBloc(this._notesRepository, this._interactor) : super(const PostsState.loading()) {
-//   on<_FetchData>(_onFetchData);
-// }
-
-// Future<void> _onFetchData(
-//     LoadNotesEvent event,
-//     Emitter emit,
-//     ) async {
-//   emit(const InitialNotesState());
-//   final notes = await _interactor.readAll();
-//
-//   emit(LoadedNotesState(notes));
-// }
-
-// @override
-// Future<void> close() {
-//   _interactor.dispose();
-//   return super.close();
-// }
 
 }
 
