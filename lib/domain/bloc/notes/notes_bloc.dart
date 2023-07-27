@@ -7,6 +7,7 @@ import 'notes_event.dart';
 import 'notes_state.dart';
 
 @Injectable()
+
 class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NotesInteractor _interactor;
 

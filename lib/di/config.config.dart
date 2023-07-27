@@ -14,9 +14,9 @@ import 'package:injectable/injectable.dart' as _i2;
 
 import '../data/interactor/default_notes_interactor.dart' as _i8;
 import '../data/interactor/default_user_interactor.dart' as _i10;
-import '../domain/bloc/edit_profile_bloc.dart' as _i11;
+import '../domain/bloc/edit_profile_cubit.dart' as _i11;
 import '../domain/bloc/notes/notes_bloc.dart' as _i12;
-import '../domain/bloc/profile_bloc.dart' as _i13;
+import '../domain/bloc/profile_cubit.dart' as _i13;
 import '../domain/interactor/notes_interactor.dart' as _i7;
 import '../domain/interactor/user_interactor.dart' as _i9;
 import '../domain/service/firebase_notes_service.dart' as _i4;

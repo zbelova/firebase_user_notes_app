@@ -334,7 +334,7 @@ class _NotesPageState extends State<NotesPage> {
                             icon: const Icon(Icons.edit),
                             constraints: const BoxConstraints(maxWidth: 25),
                             onPressed: () {
-                              _showUpdateDialog(state, index);
+                              _showUpdateDialog(state, index, context);
                               //widget.notesRepository.edit(_textController.text, note.path);
                             },
                           ),
@@ -357,12 +357,12 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Future _showUpdateDialog(state, int index) {
+  Future _showUpdateDialog(state, int index, context) {
     String editError = '';
     return showGeneralDialog(
       context: context,
       barrierDismissible: false,
-      pageBuilder: (_, __, ___) {
+      pageBuilder: (BuildContext context, Animation<double> animation, Animation<double> secondaryAnimation) {
         final noteController = TextEditingController();
         noteController.text = state.notes[index].text;
         return StatefulBuilder(
@@ -391,11 +391,12 @@ class _NotesPageState extends State<NotesPage> {
                 ),
                 TextButton(
                   onPressed: () {
+                    print('edit');
                     var color = Colors.red;
                     if (noteController.text.isEmpty) {
                       editError = 'Необходимо заполнить поля';
                     } else {
-                      //widget.notesRepository.edit(noteController.text, _notes[index].path);
+                      print('edit2');
                       context.read<NotesBloc>().add(
                             (EditNoteEvent(note: state.notes[index])),
                           );

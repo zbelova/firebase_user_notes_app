@@ -12,7 +12,6 @@ class EditProfileCubit extends Cubit<EditProfileState> {
   EditProfileCubit(this._interactor) : super(const InitialEditProfileState());
 
   Future<void> fetchData() async {
-    //print("fetchData");
     if(await _interactor.isLogged()) {
       emit(LoadedEditProfileState(await _interactor.loadUser())); }
     else {

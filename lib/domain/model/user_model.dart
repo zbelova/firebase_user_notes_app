@@ -1,7 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
-import 'package:flutter/cupertino.dart';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
 

@@ -5,7 +5,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../di/config.dart';
-import '../domain/bloc/profile_bloc.dart';
+import '../domain/bloc/profile_cubit.dart';
 import '../domain/model/user_model.dart';
 import '../globals/widgets/display_widgets.dart';
 import 'edit_profile_page.dart';
