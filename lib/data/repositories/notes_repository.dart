@@ -30,7 +30,6 @@ class NotesRepository {
             .toList();
       });
     } catch (e) {
-      //print(e);
       return const Stream.empty();
     }
   }
@@ -42,7 +41,6 @@ class NotesRepository {
       final ref = FirebaseDatabase.instance.ref("notes/$id");
       await ref.child(key).set(note);
     } catch (e) {
-      //print(e);
     }
   }
 
@@ -53,7 +51,6 @@ class NotesRepository {
       final ref = FirebaseDatabase.instance.ref("notes/$id");
       await ref.child(key).remove();
     } catch (e) {
-      //print(e);
     }
   }
 }

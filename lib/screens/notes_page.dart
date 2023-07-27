@@ -39,7 +39,7 @@ class _NotesPageState extends State<NotesPage> {
   final NotesInteractor _interactor = getIt<NotesInteractor>();
 
   bool paymentLoading = false;
-  bool paymentComplete = false;
+  bool paymentComplete = true; //false;
   bool paymentLoadingCheck = false;
   int premiumDeadline = 0;
   int premiumDuration = 30;
@@ -62,19 +62,6 @@ class _NotesPageState extends State<NotesPage> {
     _textController.addListener(() {
       setState(() {});
     });
-  }
-
-  Future<void> _addNote() async {
-    if (_textController.text.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text('Введите текст заметки'),
-        ),
-      );
-    } else {
-     // await widget.notesRepository.write(_textController.text);
-      _textController.clear();
-    }
   }
 
   void startTimer() {
@@ -166,60 +153,64 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNotesBloc(state) {
-    return Expanded(
-      child: Column(
-        children: [
-          const SizedBox(
-            height: 30,
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: TextField(
-              decoration: InputDecoration(
-                border: const OutlineInputBorder(),
-                //labelText: 'Введите заметку',
-                prefixIcon: Padding(
-                  padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
-                  child: Text(
-                    "Заметка:".toUpperCase(),
-                    style: TextStyle(color: Colors.grey[700]),
-                    //style: TextStyle(color: Colors.blue[700]),
+    return Builder(
+      builder: (context) {
+        return Expanded(
+          child: Column(
+            children: [
+              const SizedBox(
+                height: 30,
+              ),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 18),
+                child: TextField(
+                  decoration: InputDecoration(
+                    border: const OutlineInputBorder(),
+                    //labelText: 'Введите заметку',
+                    prefixIcon: Padding(
+                      padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
+                      child: Text(
+                        "Заметка:".toUpperCase(),
+                        style: TextStyle(color: Colors.grey[700]),
+                        //style: TextStyle(color: Colors.blue[700]),
+                      ),
+                    ),
                   ),
+                  controller: _textController,
                 ),
               ),
-              controller: _textController,
-            ),
+              const SizedBox(
+                height: 8,
+              ),
+              ElevatedButton(
+                onPressed: () async {
+                  context.read<NotesBloc>().add(
+                        (AddNoteEvent(text: _textController.text)),
+                      );
+                },
+                child: const Text('Добавить заметку'),
+              ),
+              const SizedBox(height: 8),
+              Expanded(
+                child: ListView.builder(
+                  itemBuilder: (context, index) {
+                    if (state.notes.isEmpty) {
+                      return const Center(
+                        child: Text('Заметок нет'),
+                      );
+                    } else {
+                      return ListTile(
+                        title: _buildNote(state, state.notes[index], index),
+                      );
+                    }
+                  },
+                  itemCount: state.notes.length,
+                ),
+              ),
+            ],
           ),
-          const SizedBox(
-            height: 8,
-          ),
-          ElevatedButton(
-            onPressed: () async {
-              context.read<NotesBloc>().add(
-                    (AddNoteEvent(text: _textController.text)),
-                  );
-            },
-            child: const Text('Добавить заметку'),
-          ),
-          const SizedBox(height: 8),
-          Expanded(
-            child: ListView.builder(
-              itemBuilder: (context, index) {
-                if (state.notes.isEmpty) {
-                  return const Center(
-                    child: Text('Заметок нет'),
-                  );
-                } else {
-                  return ListTile(
-                    title: _buildNote(state, state.notes[index], index),
-                  );
-                }
-              },
-              itemCount: state.notes.length,
-            ),
-          ),
-        ],
-      ),
+        );
+      }
     );
   }
 
@@ -296,7 +287,7 @@ class _NotesPageState extends State<NotesPage> {
                 padding: const EdgeInsets.all(10.0),
                 child: Column(
                   children: [
-                    Text(
+                    const Text(
                       'Premium подписка истекает через: ',
                     ),
                     Text(
@@ -315,50 +306,54 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNote(state, NoteModel note, int index) {
-    return Column(
-      children: [
-        Container(
-          width: MediaQuery.of(context).size.width,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xff03ecd4),
-          ),
-          child: Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  Padding(
-                    padding: const EdgeInsets.only(left: 8.0),
-                    child: Text(
-                      note.text,
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
-                    ),
-                  ),
-                  Row(
+    return Builder(
+      builder: (context) {
+        return Column(
+          children: [
+            Container(
+              width: MediaQuery.of(context).size.width,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(10),
+                color: const Color(0xff03ecd4),
+              ),
+              child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
                     children: [
-                      IconButton(
-                        icon: const Icon(Icons.edit),
-                        constraints: const BoxConstraints(maxWidth: 25),
-                        onPressed: () {
-                          _showUpdateDialog(state, index);
-                          //widget.notesRepository.edit(_textController.text, note.path);
-                        },
+                      Padding(
+                        padding: const EdgeInsets.only(left: 8.0),
+                        child: Text(
+                          note.text,
+                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
+                        ),
                       ),
-                      IconButton(
-                        icon: const Icon(Icons.delete),
-                        onPressed: () async {
-                          context.read<NotesBloc>().add(
-                            (DeleteNoteEvent(path: note.path)),
-                          );
-                        },
+                      Row(
+                        children: [
+                          IconButton(
+                            icon: const Icon(Icons.edit),
+                            constraints: const BoxConstraints(maxWidth: 25),
+                            onPressed: () {
+                              _showUpdateDialog(state, index);
+                              //widget.notesRepository.edit(_textController.text, note.path);
+                            },
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.delete),
+                            onPressed: () async {
+                              context.read<NotesBloc>().add(
+                                (DeleteNoteEvent(path: note.path)),
+                              );
+                            },
+                          ),
+                        ],
                       ),
                     ],
-                  ),
-                ],
-              )),
-        ),
-      ],
+                  )),
+            ),
+          ],
+        );
+      }
     );
   }
 

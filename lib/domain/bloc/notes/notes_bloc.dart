@@ -20,7 +20,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
   FutureOr<void> _onLoadEvent(LoadNotesEvent event, Emitter<NotesState> emit) async {
     emit(const LoadingNotesState());
-    emit.forEach(_interactor.readAll(), onData: (notes) {
+    await emit.forEach(_interactor.readAll(), onData: (notes) {
       return LoadedNotesState(notes: notes);
     }, onError: (error, stackTrace) {
       return NotesErrorState();
@@ -28,14 +28,14 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   }
 
   FutureOr<void> _onAddEvent(AddNoteEvent event, Emitter<NotesState> emit) async {
-     try {
-       await _interactor.write(event.text);
-     } catch (e) {
-       emit(NotesErrorState());
-     }
+    try {
+      await _interactor.write(event.text);
+    } catch (e) {
+      emit(NotesErrorState());
+    }
   }
 
-  FutureOr<void> _onEditEvent (EditNoteEvent event, Emitter<NotesState> emit) async {
+  FutureOr<void> _onEditEvent(EditNoteEvent event, Emitter<NotesState> emit) async {
     try {
       await _interactor.edit(event.note.text, event.note.path);
     } catch (e) {
@@ -43,16 +43,12 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     }
   }
 
-  FutureOr<void> _onDeleteEvent (DeleteNoteEvent event, Emitter<NotesState> emit) async {
+  FutureOr<void> _onDeleteEvent(DeleteNoteEvent event, Emitter<NotesState> emit) async {
     try {
       await _interactor.remove(event.path);
     } catch (e) {
+      print(e);
       emit(NotesErrorState());
     }
   }
-
 }
-
-
-
-

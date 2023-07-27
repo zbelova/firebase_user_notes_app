@@ -18,14 +18,13 @@ class FirebaseNotesService implements NotesService {
   }
 
   @override
-  Future<void> edit(String note, String key) {
-    // TODO: implement edit
-    throw UnimplementedError();
+  Future<void> edit(String note, String key) async {
+    await _notesRepository.edit(note, key);
+
   }
 
   @override
-  Future<void> remove(String key) {
-    // TODO: implement remove
-    throw UnimplementedError();
+  Future<void> remove(String key) async{
+    await _notesRepository.remove(key);
   }
 }
