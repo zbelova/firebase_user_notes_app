@@ -29,7 +29,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
 
   FutureOr<void> _onAddEvent(AddNoteEvent event, Emitter<NotesState> emit) async {
      try {
-       await _interactor.write(event.note.note);
+       await _interactor.write(event.text);
      } catch (e) {
        emit(NotesErrorState());
      }

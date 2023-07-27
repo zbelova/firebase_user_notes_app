@@ -12,6 +12,7 @@ import 'package:flutter_stripe/flutter_stripe.dart';
 import '../data/repositories/notes_repository.dart';
 import '../di/config.dart';
 import '../domain/bloc/notes/notes_bloc.dart';
+import '../domain/bloc/notes/notes_event.dart';
 import '../domain/bloc/notes/notes_state.dart';
 import '../domain/interactor/notes_interactor.dart';
 import '../keys.dart';
@@ -151,7 +152,7 @@ class _NotesPageState extends State<NotesPage> {
             LoadingNotesState() => const Center(
               child: CircularProgressIndicator(),
             ),
-            LoadedNotesState() => _buildNotesBloc(),
+            LoadedNotesState() => _buildNotesBloc(state),
             NotesErrorState() => const Center(
               child: Text('Ошибка'),
             ),
@@ -162,11 +163,11 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildNotesBloc() {
+  Widget _buildNotesBloc(state) {
     return Expanded(
       child: Column(
         children: [
-          SizedBox(
+          const SizedBox(
             height: 30,
           ),
           Padding(
@@ -191,7 +192,7 @@ class _NotesPageState extends State<NotesPage> {
             height: 8,
           ),
           ElevatedButton(
-            onPressed: _addNote,
+            onPressed: context.read<NotesBloc>().add(AddNoteEvent(_textController.text)),
             child: const Text('Добавить заметку'),
           ),
           const SizedBox(
@@ -201,18 +202,18 @@ class _NotesPageState extends State<NotesPage> {
 
             child: ListView.builder(
               itemBuilder: (context, index) {
-                if (_notes.isEmpty) {
+                if (state.notes.isEmpty) {
                   return const Center(
                     child: Text('Заметок нет'),
                   );
                 } else {
 
                   return ListTile(
-                    title: _buildNote(_notes[index], index),
+                    title: _buildNote(state.notes[index], index),
                   );
                 }
               },
-              itemCount: _notes.length,
+              itemCount: state.notes.length,
             ),
           ),
         ],

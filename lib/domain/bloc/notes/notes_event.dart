@@ -8,17 +8,17 @@ class NotesEvent {
 class LoadNotesEvent extends NotesEvent {}
 
 class AddNoteEvent extends NotesEvent {
-  final NoteModel note;
+  final String text;
 
-  const AddNoteEvent({required this.note});
+  const AddNoteEvent({required this.text});
 
   @override
   bool operator ==(Object other) =>
       identical(this, other) ||
-          other is AddNoteEvent && runtimeType == other.runtimeType && note == other.note;
+          other is AddNoteEvent && runtimeType == other.runtimeType && text == other.text;
 
   @override
-  int get hashCode => note.hashCode;
+  int get hashCode => text.hashCode;
 }
 
 class EditNoteEvent extends NotesEvent {
