@@ -1,7 +1,5 @@
-
+import 'package:firebase_user_notes/presentation/profile_page.dart';
 import 'package:flutter/material.dart';
-//import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
-import 'package:firebase_user_notes/screens/profile_page.dart';
 import '../data/user_preferences.dart';
 import '../domain/interactor/user_interactor.dart';
 import '../globals/widgets/form_widgets.dart';

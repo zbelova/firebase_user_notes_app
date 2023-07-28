@@ -9,13 +9,13 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import '../data/repositories/notes_repository.dart';
-import '../di/config.dart';
-import '../domain/bloc/notes/notes_bloc.dart';
-import '../domain/bloc/notes/notes_event.dart';
-import '../domain/bloc/notes/notes_state.dart';
-import '../domain/interactor/notes_interactor.dart';
-import '../keys.dart';
+import '../../data/repositories/notes_repository.dart';
+import '../../di/config.dart';
+import '../../domain/bloc/notes/notes_bloc.dart';
+import '../../domain/bloc/notes/notes_event.dart';
+import '../../domain/bloc/notes/notes_state.dart';
+import '../../domain/interactor/notes_interactor.dart';
+import '../../keys.dart';
 
 //TODO: решить проблему с mounted
 //TODO: проверять есть ли юзер в базе данных страйп (добавить в functions)
@@ -152,7 +152,7 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildNotesBloc(state) {
+  Widget _buildNotesBloc(LoadedNotesState state) {
     return Builder(
       builder: (context) {
         return Expanded(
@@ -166,13 +166,11 @@ class _NotesPageState extends State<NotesPage> {
                 child: TextField(
                   decoration: InputDecoration(
                     border: const OutlineInputBorder(),
-                    //labelText: 'Введите заметку',
                     prefixIcon: Padding(
                       padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
                       child: Text(
                         "Заметка:".toUpperCase(),
                         style: TextStyle(color: Colors.grey[700]),
-                        //style: TextStyle(color: Colors.blue[700]),
                       ),
                     ),
                   ),
@@ -200,7 +198,7 @@ class _NotesPageState extends State<NotesPage> {
                       );
                     } else {
                       return ListTile(
-                        title: _buildNote(state, state.notes[index], index),
+                        title: _buildNote(state,  index),
                       );
                     }
                   },
@@ -231,7 +229,7 @@ class _NotesPageState extends State<NotesPage> {
                 Center(
                   child: Text(
                     "Чтобы использовать заметки, купите Premium подписку. Стоимость \$20 - после оплаты Premium активен ${premiumDuration} секунд.",
-                    style: TextStyle(
+                    style: const TextStyle(
                       color: Colors.black,
                       fontSize: 16,
                     ),
@@ -258,7 +256,7 @@ class _NotesPageState extends State<NotesPage> {
                   ),
                 ),
                 paymentLoading
-                    ? SizedBox(
+                    ? const SizedBox(
                         height: 20,
                       )
                     : const SizedBox(),
@@ -305,7 +303,7 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildNote(state, NoteModel note, int index) {
+  Widget _buildNote(LoadedNotesState state, int index) {
     return Builder(
       builder: (context) {
         return Column(
@@ -324,7 +322,7 @@ class _NotesPageState extends State<NotesPage> {
                       Padding(
                         padding: const EdgeInsets.only(left: 8.0),
                         child: Text(
-                          note.text,
+                          state.notes[index].text,
                           style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
                         ),
                       ),
@@ -342,7 +340,7 @@ class _NotesPageState extends State<NotesPage> {
                             icon: const Icon(Icons.delete),
                             onPressed: () async {
                               context.read<NotesBloc>().add(
-                                (DeleteNoteEvent(path: note.path)),
+                                (DeleteNoteEvent(path:  state.notes[index].path)),
                               );
                             },
                           ),
@@ -357,7 +355,7 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Future _showUpdateDialog(state, int index, context) {
+  Future _showUpdateDialog(LoadedNotesState state, int index, BuildContext contextBloc) {
     String editError = '';
     return showGeneralDialog(
       context: context,
@@ -391,13 +389,11 @@ class _NotesPageState extends State<NotesPage> {
                 ),
                 TextButton(
                   onPressed: () {
-                    print('edit');
                     var color = Colors.red;
                     if (noteController.text.isEmpty) {
                       editError = 'Необходимо заполнить поля';
                     } else {
-                      print('edit2');
-                      context.read<NotesBloc>().add(
+                      contextBloc.read<NotesBloc>().add(
                             (EditNoteEvent(note: state.notes[index])),
                           );
                       editError = 'Заметка успешно изменена';

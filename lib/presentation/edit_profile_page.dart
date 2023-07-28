@@ -1,5 +1,5 @@
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_user_notes/screens/profile_page.dart';
+
+import 'package:firebase_user_notes/presentation/profile_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:image_picker/image_picker.dart';
@@ -12,7 +12,7 @@ import '../globals/widgets/display_widgets.dart';
 import '../globals/widgets/form_widgets.dart';
 
 class EditProfilePage extends StatefulWidget {
-  EditProfilePage({super.key});
+  const EditProfilePage({super.key});
 
   @override
   State<EditProfilePage> createState() => EditProfileScreen();
@@ -240,9 +240,9 @@ class EditProfileScreen extends State<EditProfilePage> {
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage()));
                     }
                   },
-                  child: Text(
+                  child: const Text(
                     'Сохранить',
-                    style: const TextStyle(fontSize: 16),
+                    style: TextStyle(fontSize: 16),
                   ))
             ],
           );

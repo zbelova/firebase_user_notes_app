@@ -10,7 +10,7 @@ import '../domain/model/user_model.dart';
 import '../globals/widgets/display_widgets.dart';
 import 'edit_profile_page.dart';
 import 'login_page.dart';
-import 'notes_page.dart';
+import 'notes/notes_page.dart';
 
 class ProfilePage extends StatefulWidget {
   ProfilePage({super.key});

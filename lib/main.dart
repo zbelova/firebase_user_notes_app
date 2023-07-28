@@ -1,6 +1,6 @@
+import 'package:firebase_user_notes/presentation/login_page.dart';
+import 'package:firebase_user_notes/presentation/profile_page.dart';
 import 'package:flutter/material.dart';
-import 'package:firebase_user_notes/screens/login_page.dart';
-import 'package:firebase_user_notes/screens/profile_page.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
 import 'di/config.dart';
@@ -57,7 +57,7 @@ class RegistrationApp extends StatelessWidget {
       return ProfilePage();
     } else {
 
-      return LoginPage();
+      return const LoginPage();
     }
   }
 }
