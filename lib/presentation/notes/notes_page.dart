@@ -394,7 +394,7 @@ class _NotesPageState extends State<NotesPage> {
                       editError = 'Необходимо заполнить поля';
                     } else {
                       contextBloc.read<NotesBloc>().add(
-                            (EditNoteEvent(note: state.notes[index])),
+                            (EditNoteEvent(text: noteController.text, path: state.notes[index].path)),
                           );
                       editError = 'Заметка успешно изменена';
                       color = Colors.green;

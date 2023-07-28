@@ -37,9 +37,8 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
   }
 
   FutureOr<void> _onEditEvent(EditNoteEvent event, Emitter<NotesState> emit) async {
-
     try {
-      await _interactor.edit(event.note.text, event.note.path);
+      await _interactor.edit(event.text, event.path);
     } catch (e) {
       emit(NotesErrorState());
     }
@@ -49,7 +48,7 @@ class NotesBloc extends Bloc<NotesEvent, NotesState> {
     try {
       await _interactor.remove(event.path);
     } catch (e) {
-      print(e);
+  //    print(e);
       emit(NotesErrorState());
     }
   }
