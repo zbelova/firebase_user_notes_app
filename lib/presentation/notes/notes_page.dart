@@ -153,63 +153,61 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNotesBloc(LoadedNotesState state) {
-    return Builder(
-      builder: (context) {
-        return Expanded(
-          child: Column(
-            children: [
-              const SizedBox(
-                height: 30,
-              ),
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 18),
-                child: TextField(
-                  decoration: InputDecoration(
-                    border: const OutlineInputBorder(),
-                    prefixIcon: Padding(
-                      padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
-                      child: Text(
-                        "Заметка:".toUpperCase(),
-                        style: TextStyle(color: Colors.grey[700]),
-                      ),
+    return Builder(builder: (context) {
+      return Expanded(
+        child: Column(
+          children: [
+            const SizedBox(
+              height: 30,
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 18),
+              child: TextField(
+                decoration: InputDecoration(
+                  border: const OutlineInputBorder(),
+                  prefixIcon: Padding(
+                    padding: const EdgeInsets.only(left: 20, right: 5, top: 15),
+                    child: Text(
+                      "Заметка:".toUpperCase(),
+                      style: TextStyle(color: Colors.grey[700]),
                     ),
                   ),
-                  controller: _textController,
                 ),
+                controller: _textController,
               ),
-              const SizedBox(
-                height: 8,
-              ),
-              ElevatedButton(
-                onPressed: () async {
-                  context.read<NotesBloc>().add(
-                        (AddNoteEvent(text: _textController.text)),
-                      );
+            ),
+            const SizedBox(
+              height: 8,
+            ),
+            ElevatedButton(
+              onPressed: () async {
+                context.read<NotesBloc>().add(
+                      (AddNoteEvent(text: _textController.text)),
+                    );
+              },
+              child: const Text('Добавить заметку'),
+            ),
+            const SizedBox(height: 8),
+            Expanded(
+              child: ListView.builder(
+                itemBuilder: (context, index) {
+                  if (state.notes.isEmpty) {
+                    return const Center(
+                      child: Text('Заметок нет'),
+                    );
+                  } else {
+                    return ListTile(
+                      title: _buildNote(state, index),
+                    );
+                  }
                 },
-                child: const Text('Добавить заметку'),
+                itemCount: state.notes.length,
               ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ListView.builder(
-                  itemBuilder: (context, index) {
-                    if (state.notes.isEmpty) {
-                      return const Center(
-                        child: Text('Заметок нет'),
-                      );
-                    } else {
-                      return ListTile(
-                        title: _buildNote(state,  index),
-                      );
-                    }
-                  },
-                  itemCount: state.notes.length,
-                ),
-              ),
-            ],
-          ),
-        );
-      }
-    );
+            ),
+          ],
+        ),
+      );
+    });
   }
 
   Widget _buildPremiumInactive(BuildContext context) {
@@ -304,55 +302,53 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildNote(LoadedNotesState state, int index) {
-    return Builder(
-      builder: (context) {
-        return Column(
-          children: [
-            Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color(0xff03ecd4),
-              ),
-              child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(left: 8.0),
-                        child: Text(
-                          state.notes[index].text,
-                          style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
-                        ),
-                      ),
-                      Row(
-                        children: [
-                          IconButton(
-                            icon: const Icon(Icons.edit),
-                            constraints: const BoxConstraints(maxWidth: 25),
-                            onPressed: () {
-                              _showUpdateDialog(state, index, context);
-                              //widget.notesRepository.edit(_textController.text, note.path);
-                            },
-                          ),
-                          IconButton(
-                            icon: const Icon(Icons.delete),
-                            onPressed: () async {
-                              context.read<NotesBloc>().add(
-                                (DeleteNoteEvent(path:  state.notes[index].path)),
-                              );
-                            },
-                          ),
-                        ],
-                      ),
-                    ],
-                  )),
+    return Builder(builder: (context) {
+      return Column(
+        children: [
+          Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xff03ecd4),
             ),
-          ],
-        );
-      }
-    );
+            child: Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.only(left: 8.0),
+                      child: Text(
+                        state.notes[index].text,
+                        style: Theme.of(context).textTheme.bodyMedium!.copyWith(color: Colors.grey[850]),
+                      ),
+                    ),
+                    Row(
+                      children: [
+                        IconButton(
+                          icon: const Icon(Icons.edit),
+                          constraints: const BoxConstraints(maxWidth: 25),
+                          onPressed: () {
+                            _showUpdateDialog(state, index, context);
+                            //widget.notesRepository.edit(_textController.text, note.path);
+                          },
+                        ),
+                        IconButton(
+                          icon: const Icon(Icons.delete),
+                          onPressed: () async {
+                            context.read<NotesBloc>().add(
+                                  (DeleteNoteEvent(path: state.notes[index].path)),
+                                );
+                          },
+                        ),
+                      ],
+                    ),
+                  ],
+                )),
+          ),
+        ],
+      );
+    });
   }
 
   Future _showUpdateDialog(LoadedNotesState state, int index, BuildContext contextBloc) {
@@ -373,7 +369,20 @@ class _NotesPageState extends State<NotesPage> {
                 children: [
                   TextField(
                     controller: noteController,
-                    decoration: const InputDecoration(hintText: 'Текст заметки'),
+
+                    // decoration: Theme.of(context).inputDecorationTheme.enabledBorder.copyWith()
+                    decoration: const InputDecoration(
+                      enabledBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                          width: 3,
+                          color: Color(0xff00d30d),
+                          style: BorderStyle.solid,
+                        ),
+                        borderRadius: BorderRadius.all(
+                          Radius.circular(20),
+                        ),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -402,7 +411,10 @@ class _NotesPageState extends State<NotesPage> {
                     }
                     setState(() {});
                     ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(editError, style: TextStyle(color: color))),
+                      SnackBar(
+                        content: Text(editError),
+                        backgroundColor: color,
+                      ),
                     );
                   },
                   child: const Text('Сохранить'),
