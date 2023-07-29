@@ -1,9 +1,6 @@
-abstract class NotesService {
-  Future<void> write(String note);
+import '../model/subscription_model.dart';
+abstract class SubscriptionService {
+  Future<SubscriptionModel> subscribe(SubscriptionModel subscriptionModel);
 
-  Stream<List<NoteModel>> readAll();
-
-  Future<void> edit(String note, String key);
-
-  Future<void> remove(String key);
+  Future<SubscriptionModel> checkSubscriptionActive(SubscriptionModel subscriptionModel);
 }
