@@ -1,13 +1,16 @@
+const subscribtionDuration = 30;
+const subscribtionPrice = 10;
+
 class SubscriptionModel {
   final String email;
-  final String price;
-  final String duration;
-  final String deadline;
+  final int price;
+  final int duration;
+  final int deadline;
 
   SubscriptionModel({
    required this.email,
-   required this.price,
-   required this.duration,
-   required this.deadline,
+   this.price = subscribtionPrice,
+   this.duration = subscribtionDuration,
+   this.deadline = 0,
   });
 }

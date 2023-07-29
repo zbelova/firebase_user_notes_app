@@ -1,15 +1,12 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:firebase_user_notes/domain/model/note_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
 import 'dart:developer';
 import 'package:http/http.dart' as http;
-import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:flutter_stripe/flutter_stripe.dart';
-import '../../data/repositories/notes_repository.dart';
 import '../../di/config.dart';
 import '../../domain/bloc/notes/notes_bloc.dart';
 import '../../domain/bloc/notes/notes_event.dart';

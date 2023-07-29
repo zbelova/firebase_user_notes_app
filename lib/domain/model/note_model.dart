@@ -1,3 +1,5 @@
+
+
 class NoteModel {
   final String text;
   final String path;
