@@ -41,7 +41,6 @@ class FirebaseUserService implements UserService {
     return user;
   }
 
-  //TODO перенести редактирование профиля в репозиторий
 
   @override
   Future<void> editUser(UserModel user) async {

@@ -16,6 +16,7 @@ import '../../domain/bloc/notes/notes_event.dart';
 import '../../domain/bloc/notes/notes_state.dart';
 import '../../domain/interactor/notes_interactor.dart';
 import '../../keys.dart';
+import 'notes_widgets.dart';
 
 //TODO: решить проблему с mounted
 //TODO: проверять есть ли юзер в базе данных страйп (добавить в functions)
@@ -198,6 +199,18 @@ class _NotesPageState extends State<NotesPage> {
                   } else {
                     return ListTile(
                       title: _buildNote(state, index),
+                      // title: NoteWidget(
+                      //   onDelete: () {
+                      //     context.read<NotesBloc>().add(
+                      //           (DeleteNoteEvent(path: state.notes[index].path)),
+                      //         );
+                      //   },
+                      //   onEdit: () {
+                      //     _showUpdateDialog(state, index, context);
+                      //   },
+                      //   state: state,
+                      //   index: index,
+                      // ),
                     );
                   }
                 },
