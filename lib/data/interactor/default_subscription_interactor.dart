@@ -15,7 +15,12 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
 
   @override
   Future<void> subscribe(String email) async {
-    await _service.subscribe(email, subscribtionPrice);
+    try {
+      await _service.subscribe(email, subscribtionPrice);
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
     // SubscriptionModel subscription = await _service.subscribe(email, subscribtionPrice);
     // subscription.deadline = 0;
     // subscription.duration = subscribtionDuration;
@@ -25,10 +30,15 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
 
   @override
   Future<SubscriptionModel> checkSubscriptionActive(String email) async {
-    SubscriptionModel subscription = await _service.checkSubscriptionActive(email, subscribtionDuration);
-    subscription.duration = subscribtionDuration;
-    subscription.price = subscribtionPrice;
-    return subscription;
+    try {
+      SubscriptionModel subscription = await _service.checkSubscriptionActive(email, subscribtionDuration);
+      subscription.duration = subscribtionDuration;
+      subscription.price = subscribtionPrice;
+      return subscription;
+    } catch (e) {
+      print(e.toString());
+      rethrow;
+    }
   }
 
 }

@@ -64,9 +64,7 @@ class SubscriptionRepository {
           style: ThemeMode.light,
         ),
       );
-
     } catch (e) {
-
       if (e is StripeException) {
         throw 'Ошибка Stripe: ${e.error.localizedMessage}';
       } else {
@@ -74,5 +72,4 @@ class SubscriptionRepository {
       }
     }
   }
-
 }
