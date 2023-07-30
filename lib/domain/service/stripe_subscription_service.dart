@@ -10,12 +10,12 @@ class StripeSubscriptionService implements SubscriptionService {
   final SubscriptionRepository _subscriptionRepository = SubscriptionRepository();
 
   @override
-  Future<SubscriptionModel> subscribe(SubscriptionModel subscriptionModel) async {
-    return await _subscriptionRepository.subscribe(subscriptionModel);
+  Future<void> subscribe(String email, int price) async {
+    await _subscriptionRepository.subscribe(email, price);
   }
 
   @override
-  Future<SubscriptionModel> checkSubscriptionActive(SubscriptionModel subscriptionModel) async {
-    return await _subscriptionRepository.checkSubscriptionActive(subscriptionModel);
+  Future<SubscriptionModel> checkSubscriptionActive(String email, int duration) async {
+    return await _subscriptionRepository.checkSubscriptionActive(email, duration);
   }
 }

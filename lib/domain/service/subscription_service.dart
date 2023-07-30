@@ -1,6 +1,6 @@
 import '../model/subscription_model.dart';
 abstract class SubscriptionService {
-  Future<SubscriptionModel> subscribe(SubscriptionModel subscriptionModel);
+  Future<void> subscribe(String email, int price);
 
-  Future<SubscriptionModel> checkSubscriptionActive(SubscriptionModel subscriptionModel);
+  Future<SubscriptionModel> checkSubscriptionActive(String email, int duration);
 }
