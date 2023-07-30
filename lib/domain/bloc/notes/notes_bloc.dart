@@ -11,7 +11,7 @@ import 'notes_state.dart';
 class NotesBloc extends Bloc<NotesEvent, NotesState> {
   final NotesInteractor _interactor;
 
-  NotesBloc(this._interactor) : super(LoadingNotesState()) {
+  NotesBloc(this._interactor) : super(const LoadingNotesState()) {
     on<LoadNotesEvent>(_onLoadEvent);
     on<AddNoteEvent>(_onAddEvent);
     on<EditNoteEvent>(_onEditEvent);

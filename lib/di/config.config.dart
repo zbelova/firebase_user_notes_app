@@ -21,12 +21,12 @@ import '../domain/bloc/profile_cubit.dart' as _i17;
 import '../domain/interactor/notes_interactor.dart' as _i9;
 import '../domain/interactor/subscription_interactor.dart' as _i11;
 import '../domain/interactor/user_interactor.dart' as _i13;
-import '../domain/service/firebase_notes_service.dart' as _i4;
-import '../domain/service/firebase_user_service.dart' as _i8;
-import '../domain/service/notes_service.dart' as _i3;
-import '../domain/service/stripe_subscription_service.dart' as _i6;
-import '../domain/service/subscription_service.dart' as _i5;
-import '../domain/service/user_service.dart' as _i7;
+import '../domain/service/notes/firebase_notes_service.dart' as _i4;
+import '../domain/service/user/firebase_user_service.dart' as _i8;
+import '../domain/service/notes/notes_service.dart' as _i3;
+import '../domain/service/subscription/stripe_subscription_service.dart' as _i6;
+import '../domain/service/subscription/subscription_service.dart' as _i5;
+import '../domain/service/user/user_service.dart' as _i7;
 
 // ignore_for_file: unnecessary_lambdas
 // ignore_for_file: lines_longer_than_80_chars

@@ -1,6 +1,4 @@
 
-import '../../model/note_model.dart';
-
 class NotesEvent {
   const NotesEvent();
 }

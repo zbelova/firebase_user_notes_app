@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import '../../domain/interactor/subscription_interactor.dart';
 import '../../domain/model/subscription_model.dart';
-import '../../domain/service/subscription_service.dart';
+import '../../domain/service/subscription/subscription_service.dart';
 
 //цена подписки и ее длительность
 const subscribtionDuration = 30;

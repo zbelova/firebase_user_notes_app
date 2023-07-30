@@ -1,7 +1,7 @@
 import 'package:injectable/injectable.dart';
 import '../../domain/interactor/notes_interactor.dart';
 import '../../domain/model/note_model.dart';
-import '../../domain/service/notes_service.dart';
+import '../../domain/service/notes/notes_service.dart';
 
 @Injectable(as: NotesInteractor)
 class DefaultNotesInteractor implements NotesInteractor {

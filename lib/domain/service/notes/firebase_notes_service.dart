@@ -1,7 +1,7 @@
 import 'package:firebase_user_notes/data/repositories/notes_repository.dart';
 import 'package:injectable/injectable.dart';
-import 'package:firebase_user_notes/domain/service/notes_service.dart';
-import '../model/note_model.dart';
+import 'package:firebase_user_notes/domain/service/notes/notes_service.dart';
+import '../../model/note_model.dart';
 
 @LazySingleton(as: NotesService)
 class FirebaseNotesService implements NotesService {

@@ -1,9 +1,9 @@
 
 import 'package:firebase_user_notes/domain/model/subscription_model.dart';
-import 'package:firebase_user_notes/domain/service/subscription_service.dart';
+import 'package:firebase_user_notes/domain/service/subscription/subscription_service.dart';
 import 'package:injectable/injectable.dart';
 
-import '../../data/repositories/subscription_repository.dart';
+import '../../../data/repositories/subscription_repository.dart';
 
 @LazySingleton(as: SubscriptionService)
 class StripeSubscriptionService implements SubscriptionService {

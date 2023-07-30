@@ -1,4 +1,4 @@
-import 'package:firebase_user_notes/domain/service/user_service.dart';
+import 'package:firebase_user_notes/domain/service/user/user_service.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/interactor/user_interactor.dart';
 import '../../domain/model/user_model.dart';
