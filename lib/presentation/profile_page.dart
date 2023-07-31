@@ -97,9 +97,6 @@ class _ProfilePageState extends State<ProfilePage> {
               padding: constraints.maxWidth > 1000 ? const EdgeInsets.only(top: 15) : const EdgeInsets.only(top: 15, left: 35),
               child: BlocBuilder<ProfileCubit, ProfileState>(builder: (ctx, state) {
                 if (state is LoadedProfileState) {
-           //       print('state.user = ${state.user}');
-             //     print('state = $state');
-                  // Показываем список, когда юзер подргрузился
                   return Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     crossAxisAlignment: CrossAxisAlignment.start,

@@ -11,6 +11,8 @@ import '../../di/config.dart';
 import '../../domain/bloc/notes/notes_bloc.dart';
 import '../../domain/bloc/notes/notes_event.dart';
 import '../../domain/bloc/notes/notes_state.dart';
+import '../../domain/bloc/subscription/subscription_bloc.dart';
+import '../../domain/bloc/subscription/subscription_state.dart';
 import '../../domain/interactor/notes_interactor.dart';
 import '../../keys.dart';
 import 'notes_widgets.dart';
@@ -33,7 +35,8 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   final TextEditingController _textController = TextEditingController();
 
-  final _bloc = getIt<NotesBloc>();
+  final _blocNotes = getIt<NotesBloc>();
+  final _blocSubscription = getIt<SubscriptionBloc>();
   final NotesInteractor _interactor = getIt<NotesInteractor>();
 
   bool paymentLoading = false;
@@ -107,25 +110,42 @@ class _NotesPageState extends State<NotesPage> {
                 fit: BoxFit.cover,
               ),
             ),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                //getStripeUser
-                paymentLoadingCheck
-                    ? const Expanded(
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            CircularProgressIndicator(),
-                          ],
+            child: BlocProvider(
+              create: (_) => _blocSubscription,
+              child: BlocBuilder<SubscriptionBloc, SubscriptionState>(
+                builder: (context, state) {
+                  return switch (state) {
+                    LoadingSubscriptionState() => const Center(
+                          child: CircularProgressIndicator(),
                         ),
-                      )
-                    : paymentComplete
-                        ? _buildPremiumActive()
-                        : _buildPremiumInactive(context),
-                // _buildPremiumActive(),
-                // paymentComplete ? _buildPremiumActive() : _buildPremiumInactive(context),
-              ],
+                    ActiveSubscriptionState() => _buildPremiumActive(),
+                    InactiveSubscriptionState() => _buildPremiumInactive(context),
+                    SubscriptionErrorState() => const Center(
+                          child: Text('Ошибка'),
+                        ),
+                  };
+
+                  // return Column(
+                  //   mainAxisAlignment: MainAxisAlignment.start,
+                  //   children: [
+                  //     //getStripeUser
+                  //     paymentLoadingCheck
+                  //         ? const Expanded(
+                  //             child: Row(
+                  //               mainAxisAlignment: MainAxisAlignment.center,
+                  //               children: [
+                  //                 CircularProgressIndicator(),
+                  //               ],
+                  //             ),
+                  //           )
+                  //         : paymentComplete
+                  //             ? _buildPremiumActive()
+                  //             : _buildPremiumInactive(context),
+                  //
+                  //   ],
+                  // );
+                }
+              ),
             ),
           ),
         ));
@@ -133,7 +153,7 @@ class _NotesPageState extends State<NotesPage> {
 
   Widget _buildNotes() {
     return BlocProvider(
-      create: (_) => _bloc,
+      create: (_) => _blocNotes,
       child: BlocBuilder<NotesBloc, NotesState>(
         builder: (context, state) {
           return switch (state) {
@@ -221,55 +241,58 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildPremiumInactive(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.all(8.0),
-      child: Container(
-        decoration: BoxDecoration(
-          borderRadius: BorderRadius.circular(10),
-          color: const Color(0xff03ecd4),
-        ),
-        child: Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: SizedBox(
-            //width: MediaQuery.of(context).size.width * 0.80,
-            child: Column(
-              children: [
-                Center(
-                  child: Text(
-                    "Чтобы использовать заметки, купите Premium подписку. Стоимость \$20 - после оплаты Premium активен ${premiumDuration} секунд.",
-                    style: const TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.20,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: const Color(0xff03ecd4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              //width: MediaQuery.of(context).size.width * 0.80,
+              child: Column(
+                children: [
+                  Center(
+                    child: Text(
+                      "Чтобы использовать заметки, купите Premium подписку. Стоимость \$10 - после оплаты Premium активен ${premiumDuration} секунд.",
+                      style: const TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
                     ),
                   ),
-                ),
-                const SizedBox(
-                  height: 20,
-                ),
-                ElevatedButton(
-                  style: ButtonStyle(
-                    foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                    //backgroundColor: MaterialStateProperty.all<Color>(Color(0xff00c003)),
+                  const SizedBox(
+                    height: 20,
                   ),
-                  onPressed: () {
-                    setState(() {
-                      //paymentLoading = true;
-                      paymentLoadingCheck = true;
-                    });
-                    initPaymentSheet(context, email: fbUser.email!, amount: 2000);
-                  },
-                  child: const Text(
-                    'Купить Premium',
-                    style: TextStyle(color: Colors.white),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                      //backgroundColor: MaterialStateProperty.all<Color>(Color(0xff00c003)),
+                    ),
+                    onPressed: () {
+                      setState(() {
+                        //paymentLoading = true;
+                        paymentLoadingCheck = true;
+                      });
+                      initPaymentSheet(context, email: fbUser.email!, amount: 1000);
+                    },
+                    child: const Text(
+                      'Купить Premium',
+                      style: TextStyle(color: Colors.white),
+                    ),
                   ),
-                ),
-                paymentLoading
-                    ? const SizedBox(
-                        height: 20,
-                      )
-                    : const SizedBox(),
-                paymentLoading ? const CircularProgressIndicator() : const SizedBox(),
-              ],
+                  paymentLoading
+                      ? const SizedBox(
+                          height: 20,
+                        )
+                      : const SizedBox(),
+                  paymentLoading ? const CircularProgressIndicator() : const SizedBox(),
+                ],
+              ),
             ),
           ),
         ),
