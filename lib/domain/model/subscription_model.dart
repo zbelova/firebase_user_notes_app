@@ -1,13 +1,13 @@
 class SubscriptionModel {
   final String email;
-  int? price;
-  int? duration;
-  int? deadline;
+  final int price;
+  final int duration;
+  final int deadline;
 
   SubscriptionModel({
     required this.email,
-    this.price,
-    this.duration,
-    this.deadline,
+    required this.price,
+    required this.duration,
+    required this.deadline,
   });
 }

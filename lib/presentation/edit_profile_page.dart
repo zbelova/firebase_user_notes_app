@@ -25,8 +25,6 @@ class EditProfileScreen extends State<EditProfilePage> {
   TextEditingController oldPasswordInput = TextEditingController();
 
 
-  //TODO перенести в интерактор или сервис
-
 
   final _cubit = getIt<EditProfileCubit>();
   final UserInteractor _interactor = getIt<UserInteractor>();

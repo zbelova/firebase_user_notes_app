@@ -2,7 +2,7 @@
 import '../model/subscription_model.dart';
 
 abstract class SubscriptionInteractor {
-  Future<void> subscribe(String email);
+  Future<void> subscribe();
 
-  Future<SubscriptionModel> checkSubscriptionActive(String email);
+  Future<SubscriptionModel> checkSubscriptionActive();
 }

@@ -8,15 +8,15 @@ import 'package:http/http.dart' as http;
 import '../../keys.dart';
 
 class SubscriptionRepository {
-  Future<SubscriptionModel> checkSubscriptionActive(String email, int duration) async {
+  Future<SubscriptionModel> checkSubscriptionActive(SubscriptionModel subscription) async {
     try {
       final response = await http.post(
           Uri.parse(
             urlFunctionCheckPremium,
           ),
           body: {
-            'email': email,
-            'premiumDuration': duration.toString(),
+            'email': subscription.email,
+            'premiumDuration': subscription.duration.toString(),
           });
 
       final jsonResponse = jsonDecode(response.body);
@@ -26,7 +26,9 @@ class SubscriptionRepository {
       int premiumDeadline = (serverPremiumDeadline) > 0 ? (serverPremiumDeadline / 1000).round() : 0;
 
       return SubscriptionModel(
-        email: email,
+        email: subscription.email,
+        price: subscription.price,
+        duration: subscription.duration,
         deadline: premiumDeadline,
       );
     } catch (e) {
@@ -39,7 +41,7 @@ class SubscriptionRepository {
     }
   }
 
-  Future<void> subscribe(String email, int price) async {
+  Future<void> subscribe(SubscriptionModel subscription) async {
     try {
       // 1. create payment intent on the server
       final response = await http.post(
@@ -47,8 +49,8 @@ class SubscriptionRepository {
             urlFunctionPaymentIntentRequest,
           ),
           body: {
-            'email': email,
-            'amount': price.toString(),
+            'email': subscription.email,
+            'amount': subscription.price.toString(),
           });
 
       final jsonResponse = jsonDecode(response.body);

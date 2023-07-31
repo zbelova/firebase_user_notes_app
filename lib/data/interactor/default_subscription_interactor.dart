@@ -1,5 +1,7 @@
+import 'package:firebase_user_notes/domain/model/user_model.dart';
 import 'package:injectable/injectable.dart';
 import '../../domain/interactor/subscription_interactor.dart';
+import '../../domain/interactor/user_interactor.dart';
 import '../../domain/model/subscription_model.dart';
 import '../../domain/service/subscription/subscription_service.dart';
 
@@ -9,14 +11,17 @@ const subscribtionPrice = 10;
 
 @Injectable(as: SubscriptionInteractor)
 class DefaultSubscriptionInteractor implements SubscriptionInteractor {
- final SubscriptionService _service;
+  final SubscriptionService _service;
+  final UserInteractor _userInteractor;
 
-  DefaultSubscriptionInteractor(this._service);
+  DefaultSubscriptionInteractor(this._service, this._userInteractor);
 
   @override
-  Future<void> subscribe(String email) async {
+  Future<void> subscribe() async {
     try {
-      await _service.subscribe(email, subscribtionPrice);
+      UserModel user = await _userInteractor.loadUser();
+      SubscriptionModel subscription = SubscriptionModel(email: user.email, price: subscribtionPrice, duration: subscribtionDuration, deadline: 0);
+      await _service.subscribe(subscription);
     } catch (e) {
       print(e.toString());
       rethrow;
@@ -29,16 +34,14 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
   }
 
   @override
-  Future<SubscriptionModel> checkSubscriptionActive(String email) async {
+  Future<SubscriptionModel> checkSubscriptionActive() async {
     try {
-      SubscriptionModel subscription = await _service.checkSubscriptionActive(email, subscribtionDuration);
-      subscription.duration = subscribtionDuration;
-      subscription.price = subscribtionPrice;
+      UserModel user = await _userInteractor.loadUser();
+      SubscriptionModel subscription = await _service.checkSubscriptionActive(SubscriptionModel(email: user.email, price: subscribtionPrice, duration: subscribtionDuration, deadline: 0));
       return subscription;
     } catch (e) {
       print(e.toString());
       rethrow;
     }
   }
-
 }
