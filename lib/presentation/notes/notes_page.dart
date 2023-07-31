@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_user_notes/domain/bloc/subscription/subscription_event.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
@@ -112,40 +113,38 @@ class _NotesPageState extends State<NotesPage> {
             ),
             child: BlocProvider(
               create: (_) => _blocSubscription,
-              child: BlocBuilder<SubscriptionBloc, SubscriptionState>(
-                builder: (context, state) {
-                  return switch (state) {
-                    LoadingSubscriptionState() => const Center(
-                          child: CircularProgressIndicator(),
-                        ),
-                    ActiveSubscriptionState() => _buildPremiumActive(),
-                    InactiveSubscriptionState() => _buildPremiumInactive(context),
-                    SubscriptionErrorState() => const Center(
-                          child: Text('Ошибка'),
-                        ),
-                  };
+              child: BlocBuilder<SubscriptionBloc, SubscriptionState>(builder: (context, state) {
+                return switch (state) {
+                  LoadingSubscriptionState() => const Center(
+                      child: CircularProgressIndicator(),
+                    ),
+                  ActiveSubscriptionState() => _buildPremiumActive(),
+                  InactiveSubscriptionState() => _buildPremiumInactive(context),
+                  SubscriptionErrorState() => const Center(
+                      child: Text('Ошибка'),
+                    ),
+                };
 
-                  // return Column(
-                  //   mainAxisAlignment: MainAxisAlignment.start,
-                  //   children: [
-                  //     //getStripeUser
-                  //     paymentLoadingCheck
-                  //         ? const Expanded(
-                  //             child: Row(
-                  //               mainAxisAlignment: MainAxisAlignment.center,
-                  //               children: [
-                  //                 CircularProgressIndicator(),
-                  //               ],
-                  //             ),
-                  //           )
-                  //         : paymentComplete
-                  //             ? _buildPremiumActive()
-                  //             : _buildPremiumInactive(context),
-                  //
-                  //   ],
-                  // );
-                }
-              ),
+                // return Column(
+                //   mainAxisAlignment: MainAxisAlignment.start,
+                //   children: [
+                //     //getStripeUser
+                //     paymentLoadingCheck
+                //         ? const Expanded(
+                //             child: Row(
+                //               mainAxisAlignment: MainAxisAlignment.center,
+                //               children: [
+                //                 CircularProgressIndicator(),
+                //               ],
+                //             ),
+                //           )
+                //         : paymentComplete
+                //             ? _buildPremiumActive()
+                //             : _buildPremiumInactive(context),
+                //
+                //   ],
+                // );
+              }),
             ),
           ),
         ));
@@ -278,7 +277,7 @@ class _NotesPageState extends State<NotesPage> {
                         //paymentLoading = true;
                         paymentLoadingCheck = true;
                       });
-                      initPaymentSheet(context, email: fbUser.email!, amount: 1000);
+                      initPaymentSheet(context);
                     },
                     child: const Text(
                       'Купить Premium',
@@ -301,36 +300,34 @@ class _NotesPageState extends State<NotesPage> {
   }
 
   Widget _buildPremiumActive() {
-    return Expanded(
-      child: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 18),
-            child: Container(
-              width: MediaQuery.of(context).size.width,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                color: const Color(0xfffdc40c),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Column(
-                  children: [
-                    const Text(
-                      'Premium подписка истекает через: ',
-                    ),
-                    Text(
-                      '$_current секунд',
-                      style: const TextStyle(fontSize: 30),
-                    ),
-                  ],
-                ),
+    return Column(
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 18),
+          child: Container(
+            width: MediaQuery.of(context).size.width,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(10),
+              color: const Color(0xfffdc40c),
+            ),
+            child: Padding(
+              padding: const EdgeInsets.all(10.0),
+              child: Column(
+                children: [
+                  const Text(
+                    'Premium подписка истекает через: ',
+                  ),
+                  Text(
+                    '$_current секунд',
+                    style: const TextStyle(fontSize: 30),
+                  ),
+                ],
               ),
             ),
           ),
-          _buildNotes(),
-        ],
-      ),
+        ),
+        _buildNotes(),
+      ],
     );
   }
 
@@ -514,7 +511,21 @@ class _NotesPageState extends State<NotesPage> {
     }
   }
 
-  Future<void> initPaymentSheet(context, {required String email, required int amount}) async {
+  Future<void> initPaymentSheet(BuildContext context) async {
+    context.read<SubscriptionBloc>().add(
+          (SubscribeEvent()),
+        );
+
+      // setState(() {
+      //   paymentLoading = false;
+      //   paymentComplete = true;
+      //
+      // });
+
+
+  }
+
+  Future<void> initPaymentSheeOld(context, {required String email, required int amount}) async {
     try {
       // 1. create payment intent on the server
       final response = await http.post(

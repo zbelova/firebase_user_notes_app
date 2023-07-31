@@ -7,7 +7,7 @@ import '../../domain/service/subscription/subscription_service.dart';
 
 //цена подписки и ее длительность
 const subscribtionDuration = 30;
-const subscribtionPrice = 10;
+const subscribtionPrice = 1000;
 
 @Injectable(as: SubscriptionInteractor)
 class DefaultSubscriptionInteractor implements SubscriptionInteractor {
@@ -23,7 +23,7 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
       SubscriptionModel subscription = SubscriptionModel(email: user.email, price: subscribtionPrice, duration: subscribtionDuration, deadline: 0);
       await _service.subscribe(subscription);
     } catch (e) {
-      print(e.toString());
+    //  print(e.toString());
       rethrow;
     }
     // SubscriptionModel subscription = await _service.subscribe(email, subscribtionPrice);
@@ -40,7 +40,7 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
       SubscriptionModel subscription = await _service.checkSubscriptionActive(SubscriptionModel(email: user.email, price: subscribtionPrice, duration: subscribtionDuration, deadline: 0));
       return subscription;
     } catch (e) {
-      print(e.toString());
+     // print(e.toString());
       rethrow;
     }
   }
