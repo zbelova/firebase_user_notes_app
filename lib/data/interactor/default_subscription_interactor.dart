@@ -26,11 +26,6 @@ class DefaultSubscriptionInteractor implements SubscriptionInteractor {
     //  print(e.toString());
       rethrow;
     }
-    // SubscriptionModel subscription = await _service.subscribe(email, subscribtionPrice);
-    // subscription.deadline = 0;
-    // subscription.duration = subscribtionDuration;
-    // subscription.price = subscribtionPrice;
-    // return subscription;
   }
 
   @override

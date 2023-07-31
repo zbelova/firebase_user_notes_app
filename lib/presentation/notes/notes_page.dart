@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/domain/bloc/subscription/subscription_event.dart';
+import 'package:firebase_user_notes/presentation/notes/subscription_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'dart:convert';
@@ -38,55 +39,26 @@ class _NotesPageState extends State<NotesPage> {
 
   final _blocNotes = getIt<NotesBloc>();
   final _blocSubscription = getIt<SubscriptionBloc>();
-  final NotesInteractor _interactor = getIt<NotesInteractor>();
+
+  //final NotesInteractor _interactor = getIt<NotesInteractor>();
 
   bool paymentLoading = false;
   bool paymentComplete = true; //false;
   bool paymentLoadingCheck = false;
   int premiumDeadline = 0;
   int premiumDuration = 30;
-  User fbUser = FirebaseAuth.instance.currentUser!;
-  int _start = 0;
-  int _current = 0;
-  Timer? _timer;
 
   @override
   void dispose() {
     _textController.dispose();
-    if (_timer != null) _timer!.cancel();
     super.dispose();
   }
 
   @override
   initState() {
-    getCheckPremium(context, email: fbUser.email!);
     super.initState();
     _textController.addListener(() {
       setState(() {});
-    });
-  }
-
-  void startTimer() {
-    //var duration = Duration(seconds: seconds);
-    const duration = Duration(seconds: 1);
-    _timer = Timer.periodic(
-      duration,
-      (Timer timer) => setState(() {
-        if (_current <= 0) {
-          timer.cancel();
-          paymentComplete = false;
-          // Здесь можно добавить код, который выполнится, когда таймер достигнет нуля
-        } else {
-          _current--;
-        }
-      }),
-    );
-  }
-
-  void resetTimer() {
-    _timer!.cancel();
-    setState(() {
-      _current = _start;
     });
   }
 
@@ -118,39 +90,19 @@ class _NotesPageState extends State<NotesPage> {
                   LoadingSubscriptionState() => const Center(
                       child: CircularProgressIndicator(),
                     ),
-                  ActiveSubscriptionState() => _buildPremiumActive(),
+                  ActiveSubscriptionState() => _buildPremiumActive(state),
                   InactiveSubscriptionState() => _buildPremiumInactive(context),
                   SubscriptionErrorState() => const Center(
                       child: Text('Ошибка'),
                     ),
                 };
-
-                // return Column(
-                //   mainAxisAlignment: MainAxisAlignment.start,
-                //   children: [
-                //     //getStripeUser
-                //     paymentLoadingCheck
-                //         ? const Expanded(
-                //             child: Row(
-                //               mainAxisAlignment: MainAxisAlignment.center,
-                //               children: [
-                //                 CircularProgressIndicator(),
-                //               ],
-                //             ),
-                //           )
-                //         : paymentComplete
-                //             ? _buildPremiumActive()
-                //             : _buildPremiumInactive(context),
-                //
-                //   ],
-                // );
               }),
             ),
           ),
         ));
   }
 
-  Widget _buildNotes() {
+  Widget _buildNotesBloc() {
     return BlocProvider(
       create: (_) => _blocNotes,
       child: BlocBuilder<NotesBloc, NotesState>(
@@ -159,7 +111,7 @@ class _NotesPageState extends State<NotesPage> {
             LoadingNotesState() => const Center(
                 child: CircularProgressIndicator(),
               ),
-            LoadedNotesState() => _buildNotesBloc(state),
+            LoadedNotesState() => _buildNotes(state),
             NotesErrorState() => const Center(
                 child: Text('Ошибка'),
               ),
@@ -169,7 +121,7 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildNotesBloc(LoadedNotesState state) {
+  Widget _buildNotes(LoadedNotesState state) {
     return Builder(builder: (context) {
       return Expanded(
         child: Column(
@@ -201,6 +153,7 @@ class _NotesPageState extends State<NotesPage> {
                 context.read<NotesBloc>().add(
                       (AddNoteEvent(text: _textController.text)),
                     );
+                _textController.clear();
               },
               child: const Text('Добавить заметку'),
             ),
@@ -252,7 +205,6 @@ class _NotesPageState extends State<NotesPage> {
           child: Padding(
             padding: const EdgeInsets.all(20.0),
             child: SizedBox(
-              //width: MediaQuery.of(context).size.width * 0.80,
               child: Column(
                 children: [
                   Center(
@@ -270,26 +222,17 @@ class _NotesPageState extends State<NotesPage> {
                   ElevatedButton(
                     style: ButtonStyle(
                       foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                      //backgroundColor: MaterialStateProperty.all<Color>(Color(0xff00c003)),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        //paymentLoading = true;
-                        paymentLoadingCheck = true;
-                      });
-                      initPaymentSheet(context);
+                    onPressed: () async {
+                      context.read<SubscriptionBloc>().add(
+                            (SubscribeEvent()),
+                          );
                     },
                     child: const Text(
                       'Купить Premium',
                       style: TextStyle(color: Colors.white),
                     ),
                   ),
-                  paymentLoading
-                      ? const SizedBox(
-                          height: 20,
-                        )
-                      : const SizedBox(),
-                  paymentLoading ? const CircularProgressIndicator() : const SizedBox(),
                 ],
               ),
             ),
@@ -299,35 +242,23 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildPremiumActive() {
-    return Column(
-      children: [
-        Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 18),
-          child: Container(
-            width: MediaQuery.of(context).size.width,
-            decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              color: const Color(0xfffdc40c),
+  Widget _buildPremiumActive(ActiveSubscriptionState state) {
+    return Builder(
+      builder: (context) {
+        return Column(
+          children: [
+            PremiumTimerWidget(
+              start: state.subscription.deadline,
+              onTimerEnd: () {
+                context.read<SubscriptionBloc>().add(
+                  (CheckSubscriptionEvent()),
+                );
+              },
             ),
-            child: Padding(
-              padding: const EdgeInsets.all(10.0),
-              child: Column(
-                children: [
-                  const Text(
-                    'Premium подписка истекает через: ',
-                  ),
-                  Text(
-                    '$_current секунд',
-                    style: const TextStyle(fontSize: 30),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-        _buildNotes(),
-      ],
+            _buildNotesBloc(),
+          ],
+        );
+      }
     );
   }
 
@@ -455,138 +386,5 @@ class _NotesPageState extends State<NotesPage> {
         );
       },
     );
-  }
-
-  Future<void> getCheckPremium(context, {required String email}) async {
-    setState(() {
-      paymentLoadingCheck = true;
-    });
-    try {
-      // 1. create payment intent on the server
-      final response = await http.post(
-          Uri.parse(
-            urlFunctionCheckPremium,
-          ),
-          body: {
-            'email': email,
-            'premiumDuration': '$premiumDuration',
-          });
-
-      final jsonResponse = jsonDecode(response.body);
-      log(jsonResponse.toString());
-      print(jsonResponse.toString());
-
-      setState(() {
-        paymentLoading = false;
-        paymentLoadingCheck = false;
-        premiumDeadline = (jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000) > 0 ? jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000 : 0;
-//print(premiumDeadline);
-        if (premiumDeadline > 0) {
-          paymentComplete = true;
-          _current = (premiumDeadline / 1000).round();
-          startTimer();
-          //_start = (premiumDeadline/1000).round();
-        } else {
-          // _start = 0;
-          _current = 0;
-          if (_timer != null) resetTimer();
-        }
-      });
-    } catch (e) {
-      setState(() {
-        paymentLoading = false;
-      });
-      log(e.toString());
-      if (e is StripeException) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
-  }
-
-  Future<void> initPaymentSheet(BuildContext context) async {
-    context.read<SubscriptionBloc>().add(
-          (SubscribeEvent()),
-        );
-
-      // setState(() {
-      //   paymentLoading = false;
-      //   paymentComplete = true;
-      //
-      // });
-
-
-  }
-
-  Future<void> initPaymentSheeOld(context, {required String email, required int amount}) async {
-    try {
-      // 1. create payment intent on the server
-      final response = await http.post(
-          Uri.parse(
-            urlFunctionPaymentIntentRequest,
-          ),
-          body: {
-            'email': email,
-            'amount': amount.toString(),
-          });
-
-      final jsonResponse = jsonDecode(response.body);
-      log(jsonResponse.toString());
-      Stripe.instance.resetPaymentSheetCustomer();
-      //2. initialize the payment sheet
-      await Stripe.instance.initPaymentSheet(
-        paymentSheetParameters: SetupPaymentSheetParameters(
-          paymentIntentClientSecret: jsonResponse['paymentIntent'],
-          merchantDisplayName: 'Space Notes',
-          customerId: jsonResponse['customer'],
-          customerEphemeralKeySecret: jsonResponse['ephemeralKey'],
-          style: ThemeMode.light,
-        ),
-      );
-
-      await Stripe.instance.presentPaymentSheet();
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text(
-            'Оплата прошла успешно!',
-          ),
-          backgroundColor: Colors.green,
-        ),
-      );
-
-      setState(() {
-        paymentLoading = false;
-        paymentComplete = true;
-        getCheckPremium(context, email: email);
-        // _current = premiumDuration;
-        // startTimer();
-        // _start = 0;
-      });
-    } catch (e) {
-      setState(() {
-        paymentLoading = false;
-      });
-
-      log(e.toString());
-      if (e is StripeException) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error from Stripe: ${e.error.localizedMessage}'),
-          ),
-        );
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
-        );
-      }
-    }
   }
 }
