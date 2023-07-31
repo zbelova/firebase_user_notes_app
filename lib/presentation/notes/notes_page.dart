@@ -83,23 +83,54 @@ class _NotesPageState extends State<NotesPage> {
                 fit: BoxFit.cover,
               ),
             ),
-            child: BlocProvider(
-              create: (_) => _blocSubscription,
-              child: BlocBuilder<SubscriptionBloc, SubscriptionState>(builder: (context, state) {
-                return switch (state) {
-                  LoadingSubscriptionState() => const Center(
-                      child: CircularProgressIndicator(),
-                    ),
-                  ActiveSubscriptionState() => _buildPremiumActive(state),
-                  InactiveSubscriptionState() => _buildPremiumInactive(context),
-                  SubscriptionErrorState() => const Center(
-                      child: Text('Ошибка'),
-                    ),
-                };
-              }),
-            ),
+            child: _buildContent(),
           ),
         ));
+  }
+
+  Widget _buildContent() {
+    return BlocProvider(
+      create: (_) => _blocSubscription,
+      child: BlocBuilder<SubscriptionBloc, SubscriptionState>(builder: (context, state) {
+        return switch (state) {
+          LoadingSubscriptionState() => const Center(
+              child: CircularProgressIndicator(),
+            ),
+          InactiveSubscriptionState() => _buildPremiumInactive(context, state),
+          ActiveSubscriptionState() => _buildPremiumActive(context, state),
+          SubscriptionErrorState() => const Center(
+              child: Text('Ошибка'),
+            ),
+        };
+      }),
+    );
+  }
+
+  Widget _buildPremiumInactive(BuildContext context, InactiveSubscriptionState state) {
+    return ActivateSubscriptionWidget(
+      onActivate: () {
+        context.read<SubscriptionBloc>().add(
+          (SubscribeEvent()),
+        );
+      },
+    );
+  }
+
+  Widget _buildPremiumActive(BuildContext context, ActiveSubscriptionState state) {
+
+      return Column(
+        children: [
+          PremiumTimerWidget(
+            start: state.subscription.deadline,
+            onTimerEnd: () {
+              context.read<SubscriptionBloc>().add(
+                (CheckSubscriptionEvent()),
+              );
+            },
+          ),
+          _buildNotesBloc(),
+        ],
+      );
   }
 
   Widget _buildNotesBloc() {
@@ -192,75 +223,7 @@ class _NotesPageState extends State<NotesPage> {
     });
   }
 
-  Widget _buildPremiumInactive(BuildContext context) {
-    return Center(
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Container(
-          height: MediaQuery.of(context).size.height * 0.20,
-          decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(10),
-            color: const Color(0xff03ecd4),
-          ),
-          child: Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: SizedBox(
-              child: Column(
-                children: [
-                  Center(
-                    child: Text(
-                      "Чтобы использовать заметки, купите Premium подписку. Стоимость \$10 - после оплаты Premium активен ${premiumDuration} секунд.",
-                      style: const TextStyle(
-                        color: Colors.black,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(
-                    height: 20,
-                  ),
-                  ElevatedButton(
-                    style: ButtonStyle(
-                      foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
-                    ),
-                    onPressed: () async {
-                      context.read<SubscriptionBloc>().add(
-                            (SubscribeEvent()),
-                          );
-                    },
-                    child: const Text(
-                      'Купить Premium',
-                      style: TextStyle(color: Colors.white),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-        ),
-      ),
-    );
-  }
 
-  Widget _buildPremiumActive(ActiveSubscriptionState state) {
-    return Builder(
-      builder: (context) {
-        return Column(
-          children: [
-            PremiumTimerWidget(
-              start: state.subscription.deadline,
-              onTimerEnd: () {
-                context.read<SubscriptionBloc>().add(
-                  (CheckSubscriptionEvent()),
-                );
-              },
-            ),
-            _buildNotesBloc(),
-          ],
-        );
-      }
-    );
-  }
 
   Widget _buildNote(LoadedNotesState state, int index) {
     return Builder(builder: (context) {

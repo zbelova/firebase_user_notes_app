@@ -83,11 +83,56 @@ class _PremiumTimerWidgetState extends State<PremiumTimerWidget> {
 }
 
 class ActivateSubscriptionWidget extends StatelessWidget {
-  const ActivateSubscriptionWidget({super.key});
+  final Function onActivate;
+  const ActivateSubscriptionWidget({super.key, required this.onActivate});
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          height: MediaQuery.of(context).size.height * 0.20,
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(10),
+            color: const Color(0xff03ecd4),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(20.0),
+            child: SizedBox(
+              child: Column(
+                children: [
+                  const Center(
+                    child: Text(
+                      "Чтобы использовать заметки, купите Premium подписку. Стоимость \$10 - после оплаты Premium активен 30 секунд.",
+                      style: TextStyle(
+                        color: Colors.black,
+                        fontSize: 16,
+                      ),
+                    ),
+                  ),
+                  const SizedBox(
+                    height: 20,
+                  ),
+                  ElevatedButton(
+                    style: ButtonStyle(
+                      foregroundColor: MaterialStateProperty.all<Color>(Colors.blue),
+                    ),
+                    onPressed: () {
+                      onActivate();
+                    },
+                    child: const Text(
+                      'Купить Premium',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
 
