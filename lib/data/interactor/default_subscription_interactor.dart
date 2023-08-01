@@ -6,7 +6,7 @@ import '../../domain/model/subscription_model.dart';
 import '../../domain/service/subscription/subscription_service.dart';
 
 //цена подписки и ее длительность
-const subscribtionDuration = 30;
+const subscribtionDuration = 300000;
 const subscribtionPrice = 1000;
 
 @Injectable(as: SubscriptionInteractor)
