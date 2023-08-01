@@ -6,7 +6,7 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:firebase_user_notes/domain/service/user/user_service.dart';
 import 'package:injectable/injectable.dart';
-import '../../../data/repositories/profiles_repository.dart';
+import '../../../data/repositories/profile_repository.dart';
 import '../../model/user_model.dart';
 
 @LazySingleton(as: UserService)
