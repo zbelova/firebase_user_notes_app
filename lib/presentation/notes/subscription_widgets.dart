@@ -104,7 +104,7 @@ class ActivateSubscriptionWidget extends StatelessWidget {
                 children: [
                   const Center(
                     child: Text(
-                      "Чтобы использовать заметки, купите Premium подписку. Стоимость \$10 - после оплаты Premium активен 30 секунд.",
+                      "Чтобы использовать заметки, купите Premium подписку. Стоимость \$20 - после оплаты Premium активен 30 секунд.",
                       style: TextStyle(
                         color: Colors.black,
                         fontSize: 16,

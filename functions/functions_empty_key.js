@@ -7,6 +7,7 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
+//Перейдите в терминале в папку functions и выполните npm install,  затем npm install stripe --save и, собственно, firebase deploy --only functions, чтобы передать в Firebase написанные выше функции.
 
 
 const {onRequest} = require("firebase-functions/v2/https");

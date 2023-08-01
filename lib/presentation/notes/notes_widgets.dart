@@ -54,8 +54,10 @@ class _AddNoteWidgetState extends State<AddNoteWidget> {
         ),
         ElevatedButton(
           onPressed: () {
-            widget.onPressed(_textController.text);
-            _textController.clear();
+            if (_textController.text.isNotEmpty) {
+              widget.onPressed(_textController.text);
+              _textController.clear();
+            }
           },
           child: const Text('Добавить заметку'),
         ),
@@ -189,7 +191,7 @@ class _NoteWidgetState extends State<NoteWidget> {
                         ),
                       );
                     } else {
-                       widget.onEdit(_noteController.text);
+                      widget.onEdit(_noteController.text);
                       // contextBloc.read<NotesBloc>().add(
                       //       (EditNoteEvent(text: _noteController.text, path: state.notes[index].path)),
                       //     );

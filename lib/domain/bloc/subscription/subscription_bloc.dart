@@ -22,6 +22,7 @@ class SubscriptionBloc extends Bloc<SubscriptionEvent, SubscriptionState> {
 
   FutureOr<void> _onSubscribeEvent(SubscribeEvent event, Emitter<SubscriptionState> emit) async {
     try {
+      emit(const LoadingSubscriptionState());
       await _interactor.subscribe();
       add(CheckSubscriptionEvent());
     } catch (e) {

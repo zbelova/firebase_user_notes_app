@@ -20,11 +20,11 @@ class SubscriptionRepository {
           });
 
       final jsonResponse = jsonDecode(response.body);
-      //print(jsonResponse.toString());
-
-      int serverPremiumDeadline = jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000;
-      int premiumDeadline = (serverPremiumDeadline) > 0 ? (serverPremiumDeadline / 1000).round() : 0;
-
+      int premiumDeadline = 0;
+      if (jsonResponse['success'] && jsonResponse['premium']) {
+        int serverPremiumDeadline = jsonResponse['premiumDeadline'] - jsonResponse['now'] + 6000;
+        premiumDeadline = (serverPremiumDeadline) > 0 ? (serverPremiumDeadline / 1000).round() : 0;
+      }
       return SubscriptionModel(
         email: subscription.email,
         price: subscription.price,
@@ -32,7 +32,6 @@ class SubscriptionRepository {
         deadline: premiumDeadline,
       );
     } catch (e) {
-      //print(e.toString());
       if (e is StripeException) {
         throw 'Ошибка Stripe: ${e.error.localizedMessage}';
       } else {

@@ -1,17 +1,14 @@
-import 'dart:async';
 import 'package:firebase_user_notes/domain/bloc/subscription/subscription_event.dart';
 import 'package:firebase_user_notes/presentation/notes/notes_widgets.dart';
 import 'package:firebase_user_notes/presentation/notes/subscription_widgets.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../di/config.dart';
-import '../../domain/bloc/notes/notes_bloc.dart';
-import '../../domain/bloc/notes/notes_event.dart';
-import '../../domain/bloc/notes/notes_state.dart';
-import '../../domain/bloc/subscription/subscription_bloc.dart';
-import '../../domain/bloc/subscription/subscription_state.dart';
-
-//TODO: проверять есть ли юзер в базе данных страйп (добавить в functions)
+import 'package:firebase_user_notes/di/config.dart';
+import 'package:firebase_user_notes/domain/bloc/notes/notes_bloc.dart';
+import 'package:firebase_user_notes/domain/bloc/notes/notes_event.dart';
+import 'package:firebase_user_notes/domain/bloc/notes/notes_state.dart';
+import 'package:firebase_user_notes/domain/bloc/subscription/subscription_bloc.dart';
+import 'package:firebase_user_notes/domain/bloc/subscription/subscription_state.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({
@@ -55,18 +52,34 @@ class _NotesPageState extends State<NotesPage> {
   Widget _buildContent() {
     return BlocProvider(
       create: (_) => _blocSubscription,
-      child: BlocBuilder<SubscriptionBloc, SubscriptionState>(builder: (context, state) {
-        return switch (state) {
-          LoadingSubscriptionState() => const Center(
-              child: CircularProgressIndicator(),
+      child: BlocListener<SubscriptionBloc, SubscriptionState>(
+        listenWhen: (previous, current) {
+          if (previous is SubscriptionErrorState && current is LoadingSubscriptionState) {
+            return true;
+          }
+          return false;
+        },
+        listener: (context, state) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Ошибка подключения к Stripe'),
+              backgroundColor: Colors.red,
             ),
-          InactiveSubscriptionState() => _buildPremiumInactive(context, state),
-          ActiveSubscriptionState() => _buildPremiumActive(context, state),
-          SubscriptionErrorState() => const Center(
-              child: Text('Ошибка'),
-            ),
-        };
-      }),
+          );
+        },
+        child: BlocBuilder<SubscriptionBloc, SubscriptionState>(
+          builder: (context, state) {
+            return switch (state) {
+              LoadingSubscriptionState() => const Center(
+                  child: CircularProgressIndicator(),
+                ),
+              InactiveSubscriptionState() => _buildPremiumInactive(context, state),
+              ActiveSubscriptionState() => _buildPremiumActive(context, state),
+              SubscriptionErrorState() => _buildStripeError(context, state),
+            };
+          },
+        ),
+      ),
     );
   }
 
@@ -93,6 +106,15 @@ class _NotesPageState extends State<NotesPage> {
         ),
         _buildNotesBloc(),
       ],
+    );
+  }
+
+  Widget _buildStripeError(BuildContext context, SubscriptionErrorState state) {
+    context.read<SubscriptionBloc>().add(
+          (CheckSubscriptionEvent()),
+        );
+    return const Center(
+      child: CircularProgressIndicator(),
     );
   }
 

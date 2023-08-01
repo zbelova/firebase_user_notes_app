@@ -204,7 +204,7 @@ class _ProfilePageState extends State<ProfilePage> {
       children: [
         ProfileTextFieldView("Email", state.user.email),
         if (state.user.name.isNotEmpty) ProfileTextFieldView("Имя", state.user.name),
-        if (state.user.phone != '+7') ProfileTextFieldView("Телефон", state.user.phone),
+        if (state.user.phone != '+7' && state.user.phone.isNotEmpty) ProfileTextFieldView("Телефон", state.user.phone),
         if (state.user.city.isNotEmpty) ProfileTextFieldView("Город", state.user.city),
         if (state.user.birthDate.isNotEmpty) ProfileTextFieldView("Дата рождения", state.user.birthDate),
         if (state.user.aboutSelf.isNotEmpty) ProfileTextFieldView("О себе", state.user.aboutSelf),
@@ -236,14 +236,13 @@ class _ProfilePageState extends State<ProfilePage> {
           );
         }
       },
-      //child: Text("Редактировать"),
 
       child: const Icon(Icons.edit),
     );
   }
 
   Widget _buildTopImage(UserModel user) {
-   print('user = $user');
+   //print('user = $user');
     return SizedBox(
       width: 200,
       child: PhotoImage(
