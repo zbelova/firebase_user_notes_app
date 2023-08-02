@@ -61,7 +61,7 @@ class _NotesPageState extends State<NotesPage> {
         listener: (context, state) {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(
-              content: Text('Ошибка подключения к Stripe'),
+              content: Text('Оплата не прошла'),
               backgroundColor: Colors.red,
             ),
           );
@@ -74,7 +74,7 @@ class _NotesPageState extends State<NotesPage> {
                 ),
               InactiveSubscriptionState() => _buildPremiumInactive(context, state),
               ActiveSubscriptionState() => _buildPremiumActive(context, state),
-              SubscriptionErrorState() => _buildStripeError(context, state),
+              SubscriptionErrorState() => _buildPaymentError(context, state),
             };
           },
         ),
@@ -108,7 +108,7 @@ class _NotesPageState extends State<NotesPage> {
     );
   }
 
-  Widget _buildStripeError(BuildContext context, SubscriptionErrorState state) {
+  Widget _buildPaymentError(BuildContext context, SubscriptionErrorState state) {
     context.read<SubscriptionBloc>().add(
           (CheckSubscriptionEvent()),
         );
