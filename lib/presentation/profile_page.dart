@@ -53,27 +53,27 @@ class _ProfilePageState extends State<ProfilePage> {
             title: const Text('Профиль'),
           ),
         ),
-        floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
-        floatingActionButton: Container(
-          height: 50,
-          margin: const EdgeInsets.all(10),
-          child: ElevatedButton(
-            onPressed: () {
-              if (mounted) {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => const NotesPage(
-                    ),
-                  ),
-                );
-              }
-            },
-            child: const Center(
-              child: Text('Мои заметки'),
-            ),
-          ),
-        ),
+        // floatingActionButtonLocation: FloatingActionButtonLocation.centerFloat,
+        // floatingActionButton: Container(
+        //   height: 50,
+        //   margin: const EdgeInsets.all(10),
+        //   child: ElevatedButton(
+        //     onPressed: () {
+        //       if (mounted) {
+        //         Navigator.push(
+        //           context,
+        //           MaterialPageRoute(
+        //             builder: (context) => const NotesPage(
+        //             ),
+        //           ),
+        //         );
+        //       }
+        //     },
+        //     child: const Center(
+        //       child: Text('Мои заметки'),
+        //     ),
+        //   ),
+        // ),
         body: SafeArea(
           child: Container(
             decoration: const BoxDecoration(
@@ -112,10 +112,31 @@ class _ProfilePageState extends State<ProfilePage> {
                         flex: 2,
                         child: Column(
                           children: [
+
                             const SizedBox(
                               height: 25,
                             ),
                             _buildTopImage(state.user),
+                            Container(
+                              //height: 50,
+                              margin: const EdgeInsets.all(10),
+                              child: ElevatedButton(
+                                onPressed: () {
+                                  if (mounted) {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => const NotesPage(
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: const Center(
+                                  child: Text('Заметки'),
+                                ),
+                              ),
+                            ),
                           ],
                         ),
                       ),
@@ -129,6 +150,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       Expanded(
                         child: Column(
                           children: [
+
                             const SizedBox(
                               height: 22,
                             ),
@@ -163,6 +185,27 @@ class _ProfilePageState extends State<ProfilePage> {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
             children: [
+              Container(
+                //height: 50,
+                margin: const EdgeInsets.all(10),
+                child: ElevatedButton(
+                  onPressed: () {
+                    if (mounted) {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => const NotesPage(
+                          ),
+                        ),
+                      );
+                    }
+                  },
+                  child: const Center(
+                    child: Text('Заметки'),
+                  ),
+                ),
+              ),
+              Spacer(),
               editButton(context),
               const SizedBox(
                 width: 10,
