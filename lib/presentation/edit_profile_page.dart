@@ -211,8 +211,9 @@ class EditProfileScreen extends State<EditProfilePage> {
           //TODO не отображается изначальная дата рождения
           dateInput.text = state.user.birthDate;
           _user.birthDate = state.user.birthDate;
+          _user.photo = state.user.photo;
           //_user.photo = state.user.photo;
-        //   print('state is LoadedProfileState');
+         // print('state is LoadedProfileState');
           return Column(
             children: [
               buildEmailField(state),
@@ -234,7 +235,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                   onPressed: () async {
                     if (_formkey.currentState!.validate()) {
                       _formkey.currentState!.save();
-                      print(_user.photo);
+          //            print(_user.photo);
                       await _interactor.editUser(_user);
                       //Navigator.pop(context);
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage()));

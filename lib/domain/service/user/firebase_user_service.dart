@@ -49,7 +49,7 @@ class FirebaseUserService implements UserService {
       if (id == null) return;
       final ref = FirebaseDatabase.instance.ref("profiles/$id");
 
-      await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate});
+      await ref.child(id).set({"name": user.name, "phone": user.phone, "city": user.city, "aboutSelf": user.aboutSelf, "birthDate": user.birthDate, "photo": user.photo});
       if (user.photoFile != null) {
         await uploadImageToFirebase(user, ref);
       }
