@@ -79,7 +79,7 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                  'lib/assets/bg2.jpg',
+                  'assets/bg2.jpg',
                 ),
                 fit: BoxFit.cover,
               ),
@@ -188,7 +188,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     ],
                   ),
                   Padding(
-                    padding: const EdgeInsets.all(30.0),
+                    padding: const EdgeInsets.all(10.0),
                     child: _buildProfileFields(state),
                   ),
                 ],
@@ -252,7 +252,7 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget _buildTopImage(UserModel user) {
    //print('user = $user');
     return SizedBox(
-      width: 200,
+      width: 150,
       child: PhotoImage(
         photoURL: user.photo,
       ),

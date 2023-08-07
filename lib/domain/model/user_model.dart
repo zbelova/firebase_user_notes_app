@@ -21,7 +21,7 @@ class UserModel {
     this.passwordOld = '',
     this.city = '',
     this.aboutSelf = '',
-    this.photo = 'lib/assets/default.jpg',
+    this.photo = 'assets/default.jpg',
     this.birthDate = '',
     this.path});
 

@@ -83,10 +83,10 @@ class PhotoImage extends StatelessWidget {
                 aspectRatio: 1,
                 child: photoURL != null?
 
-              photoURL == 'lib/assets/default.jpg'
-                  ? Image.asset('lib/assets/default.jpg')
+              photoURL == 'assets/default.jpg'
+                  ? Image.asset('assets/default.jpg')
                   : FadeInImage.assetNetwork(
-                placeholder: 'lib/assets/default.jpg',
+                placeholder: 'assets/default.jpg',
                 image: photoURL!,
                 fit: BoxFit.cover,
               ): Image.file(File(photoFile!.path), fit: BoxFit.cover,),

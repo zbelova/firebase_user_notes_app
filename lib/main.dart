@@ -35,8 +35,8 @@ class RegistrationApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    precacheImage(const AssetImage("lib/assets/bg1.jpg"), context);
-    precacheImage(const AssetImage("lib/assets/bg2.jpg"), context);
+    precacheImage(const AssetImage("assets/bg1.jpg"), context);
+    precacheImage(const AssetImage("assets/bg2.jpg"), context);
     return MaterialApp(
       debugShowCheckedModeBanner: false,
       title: 'Регистрация пользователя',

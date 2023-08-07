@@ -115,7 +115,7 @@ class EditProfileScreen extends State<EditProfilePage> {
       decoration: const BoxDecoration(
         image: DecorationImage(
           image: AssetImage(
-            'lib/assets/bg2.jpg',
+            'assets/bg2.jpg',
           ),
           fit: BoxFit.cover,
         ),
@@ -131,7 +131,7 @@ class EditProfileScreen extends State<EditProfilePage> {
         decoration: const BoxDecoration(
           image: DecorationImage(
             image: AssetImage(
-              'lib/assets/bg2.jpg',
+              'assets/bg2.jpg',
             ),
             fit: BoxFit.cover,
           ),
@@ -210,6 +210,7 @@ class EditProfileScreen extends State<EditProfilePage> {
         if (state is LoadedEditProfileState) {
           //TODO не отображается изначальная дата рождения
           dateInput.text = state.user.birthDate;
+          _user.birthDate = state.user.birthDate;
           //_user.photo = state.user.photo;
         //   print('state is LoadedProfileState');
           return Column(
@@ -233,6 +234,7 @@ class EditProfileScreen extends State<EditProfilePage> {
                   onPressed: () async {
                     if (_formkey.currentState!.validate()) {
                       _formkey.currentState!.save();
+                      print(_user.photo);
                       await _interactor.editUser(_user);
                       //Navigator.pop(context);
                       Navigator.pushReplacement(context, MaterialPageRoute(builder: (context) => ProfilePage()));

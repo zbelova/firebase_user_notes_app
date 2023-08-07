@@ -23,7 +23,7 @@ class ProfilesRepository {
           city: result[key]["city"] ?? '',
           aboutSelf: result[key]["aboutSelf"]?? '',
           birthDate: result[key]["birthDate"] ?? '',
-          photo: result[key]["photo"]?? 'lib/assets/default.jpg',
+          photo: result[key]["photo"]?? 'assets/default.jpg',
         )).toList()[0];
 
 

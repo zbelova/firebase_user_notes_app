@@ -53,7 +53,7 @@ class _NotesPageState extends State<NotesPage> {
             decoration: const BoxDecoration(
               image: DecorationImage(
                 image: AssetImage(
-                  'lib/assets/bg2.jpg',
+                  'assets/bg2.jpg',
                 ),
                 fit: BoxFit.cover,
               ),

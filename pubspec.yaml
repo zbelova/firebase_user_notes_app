@@ -1,5 +1,5 @@
 name: firebase_user_notes
-description: Firebase User Notes
+description: Space Notes
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
@@ -70,6 +70,11 @@ dev_dependencies:
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 
+flutter_icons:
+  image_path: "assets/ic_launcher.png"
+  android: true
+  ios: true
+
 # The following section is specific to Flutter packages.
 flutter:
 
@@ -78,15 +83,15 @@ flutter:
   # the material Icons class.
   uses-material-design: true
   assets:
-    - lib/assets/
+    - assets/
   fonts:
     - family: Proxima Nova Rg Regular
       fonts:
-        - asset: lib/assets/fonts/FontsFree-Net-proxima_nova_reg-webfont.ttf
+        - asset: assets/fonts/FontsFree-Net-proxima_nova_reg-webfont.ttf
     - family: Raleway
       fonts:
-        - asset: lib/assets/fonts/Raleway-Medium.ttf
-        - asset: lib/assets/fonts/Raleway-Italic-VariableFont_wght.ttf
+        - asset: assets/fonts/Raleway-Medium.ttf
+        - asset: assets/fonts/Raleway-Italic-VariableFont_wght.ttf
           style: italic
 
   # To add assets to your application, add an assets section, like this:
