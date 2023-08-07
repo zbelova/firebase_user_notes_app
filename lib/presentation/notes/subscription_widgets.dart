@@ -92,7 +92,7 @@ class ActivateSubscriptionWidget extends StatelessWidget {
       child: Padding(
         padding: const EdgeInsets.all(8.0),
         child: Container(
-          height: MediaQuery.of(context).size.height * 0.20,
+          height: MediaQuery.of(context).size.height * 0.25,
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(10),
             color: const Color(0xff03ecd4),

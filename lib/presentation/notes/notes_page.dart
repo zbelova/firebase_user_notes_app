@@ -9,7 +9,7 @@ import 'package:firebase_user_notes/domain/bloc/notes/notes_event.dart';
 import 'package:firebase_user_notes/domain/bloc/notes/notes_state.dart';
 import 'package:firebase_user_notes/domain/bloc/subscription/subscription_bloc.dart';
 import 'package:firebase_user_notes/domain/bloc/subscription/subscription_state.dart';
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 
 class NotesPage extends StatefulWidget {
   const NotesPage({
@@ -23,18 +23,18 @@ class NotesPage extends StatefulWidget {
 class _NotesPageState extends State<NotesPage> {
   final _blocNotes = getIt<NotesBloc>();
   final _blocSubscription = getIt<SubscriptionBloc>();
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
-
-  _setCurrentScreen() async {
-    await FirebaseAnalytics.instance.setCurrentScreen(
-      screenName: 'NotesPage',
-      screenClassOverride: 'NotesPage',
-    );
-  }
+  // FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  //
+  // _setCurrentScreen() async {
+  //   await FirebaseAnalytics.instance.setCurrentScreen(
+  //     screenName: 'NotesPage',
+  //     screenClassOverride: 'NotesPage',
+  //   );
+  // }
 
   @override
   void initState() {
-    _setCurrentScreen();
+    //_setCurrentScreen();
     super.initState();
   }
 
@@ -160,7 +160,7 @@ class _NotesPageState extends State<NotesPage> {
               context.read<NotesBloc>().add(
                     (AddNoteEvent(text: text)),
                   );
-              await FirebaseAnalytics.instance.logEvent(name: 'add_note', parameters: {'text': text});
+              //await FirebaseAnalytics.instance.logEvent(name: 'add_note', parameters: {'text': text});
 
             }),
             const SizedBox(height: 8),

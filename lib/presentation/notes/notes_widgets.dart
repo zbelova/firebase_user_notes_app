@@ -89,7 +89,7 @@ class _NoteWidgetState extends State<NoteWidget> {
 
   @override
   void dispose() {
-    _noteController.dispose();
+    //_noteController.dispose();
     super.dispose();
   }
 

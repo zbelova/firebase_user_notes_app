@@ -1,4 +1,4 @@
-import 'package:firebase_analytics/firebase_analytics.dart';
+//import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
 import 'package:flutter/cupertino.dart';
@@ -22,18 +22,18 @@ class ProfilePage extends StatefulWidget {
 class _ProfilePageState extends State<ProfilePage> {
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
   final _cubit = getIt<ProfileCubit>();
-  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+  //FirebaseAnalytics analytics = FirebaseAnalytics.instance;
 
-  _setCurrentScreen() async {
-    await FirebaseAnalytics.instance.setCurrentScreen(
-      screenName: 'ProfilePage',
-      screenClassOverride: 'ProfilePage',
-    );
-  }
+  // _setCurrentScreen() async {
+  //   await FirebaseAnalytics.instance.setCurrentScreen(
+  //     screenName: 'ProfilePage',
+  //     screenClassOverride: 'ProfilePage',
+  //   );
+  // }
 
   @override
   void initState() {
-    _setCurrentScreen();
+   // _setCurrentScreen();
     super.initState();
   }
 
