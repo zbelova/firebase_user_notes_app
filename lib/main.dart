@@ -1,3 +1,5 @@
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:firebase_user_notes/domain/service/firebase_notifications_service.dart';
 import 'package:firebase_user_notes/presentation/login_page.dart';
 import 'package:firebase_user_notes/presentation/profile_page.dart';
 import 'package:flutter/material.dart';
@@ -10,12 +12,14 @@ import 'globals/theme/app_theme.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 
-
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  //await FirebaseService().initNotifications();
+
   await UserPreferences().init();
   Stripe.publishableKey = stripePubKey;
   await Stripe.instance.applySettings();

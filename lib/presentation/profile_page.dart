@@ -1,6 +1,6 @@
+import 'package:firebase_analytics/firebase_analytics.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_user_notes/data/repositories/auth_repository.dart';
-import 'package:firebase_user_notes/data/repositories/notes_repository.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -20,13 +20,20 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  //final UserModel _user = UserModel();
   final bool loggedIn = FirebaseAuth.instance.currentUser != null ? true : false;
   final _cubit = getIt<ProfileCubit>();
+  FirebaseAnalytics analytics = FirebaseAnalytics.instance;
+
+  _setCurrentScreen() async {
+    await FirebaseAnalytics.instance.setCurrentScreen(
+      screenName: 'ProfilePage',
+      screenClassOverride: 'ProfilePage',
+    );
+  }
 
   @override
   void initState() {
-    //_user = widget.profilesRepository.get();
+    _setCurrentScreen();
     super.initState();
   }
 
@@ -217,6 +224,7 @@ class _ProfilePageState extends State<ProfilePage> {
       onPressed: () {
         AuthRepository.logout();
         //UserPreferences().setRememberLoggedIn(false);
+
         Navigator.of(context).pushAndRemoveUntil(MaterialPageRoute(builder: (context) => LoginPage()), (Route<dynamic> route) => false);
       },
       //child: Text("Выйти"),
